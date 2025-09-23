@@ -1,6 +1,7 @@
 pragma solidity ^0.8.26;
 
 import { ISuperToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
+import { ISuperfluidPool } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
 
 interface IStakingPool {
 
@@ -15,6 +16,11 @@ interface IStakingPool {
     error ALREADY_STAKED();
     error INVALID_STAKE_AMOUNT();
     error NOT_REWARD_CONTROLLER();
+
+    function SPIRIT() external view returns (ISuperToken);
+    function child() external view returns (ISuperToken);
+    function REWARD_CONTROLLER() external view returns (address);
+    function distributionPool() external view returns (ISuperfluidPool);
 
     function initialize(ISuperToken _child) external;
 

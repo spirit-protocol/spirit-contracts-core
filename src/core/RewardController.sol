@@ -2,6 +2,9 @@ pragma solidity ^0.8.26;
 
 /* Openzeppelin Imports */
 import { AccessControl } from "@openzeppelin-v5/contracts/access/AccessControl.sol";
+
+import { ERC1967Utils } from "@openzeppelin-v5/contracts/proxy/ERC1967/ERC1967Utils.sol";
+import { Initializable } from "@openzeppelin-v5/contracts/proxy/utils/Initializable.sol";
 import { SafeCast } from "@openzeppelin-v5/contracts/utils/math/SafeCast.sol";
 
 /* Superfluid Imports */
@@ -16,7 +19,7 @@ import { IStakingPool } from "src/interfaces/core/IStakingPool.sol";
 using SuperTokenV1Library for ISuperToken;
 using SafeCast for int256;
 
-contract RewardController is IRewardController, AccessControl {
+contract RewardController is IRewardController, AccessControl, Initializable {
 
     // STATES
     bytes32 public constant FACTORY_ROLE = keccak256("FACTORY_ROLE");
@@ -26,11 +29,14 @@ contract RewardController is IRewardController, AccessControl {
     mapping(address child => IStakingPool stakingPool) public stakingPools;
 
     // CONSTRUCTOR
-    constructor(address admin, ISuperToken _spirit) {
+    constructor(ISuperToken _spirit) {
+        _disableInitializers();
+        SPIRIT = _spirit;
+    }
+
+    function initialize(address admin) external initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
         _grantRole(DISTRIBUTOR_ROLE, admin);
-
-        SPIRIT = _spirit;
     }
 
     // EXTERNAL FUNCTIONS
@@ -64,6 +70,10 @@ contract RewardController is IRewardController, AccessControl {
 
         // Refresh the distribution flow
         stakingPool.refreshDistributionFlow();
+    }
+
+    function upgradeTo(address newImplementation, bytes calldata data) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        ERC1967Utils.upgradeToAndCall(newImplementation, data);
     }
 
 }

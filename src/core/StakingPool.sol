@@ -1,20 +1,19 @@
 pragma solidity ^0.8.26;
 
-/* Openzeppelin Contracts & Interfaces */
-
+/* Openzeppelin Imports */
 import { Initializable } from "@openzeppelin-v5/contracts/proxy/utils/Initializable.sol";
 import { SafeCast } from "@openzeppelin-v5/contracts/utils/math/SafeCast.sol";
 
-/* Superfluid Protocol Contracts & Interfaces */
+/* Superfluid Imports */
 import { SuperTokenV1Library } from "@superfluid-finance/ethereum-contracts/contracts/apps/SuperTokenV1Library.sol";
-import {
-    ISuperToken,
-    ISuperfluidPool,
-    PoolConfig
-} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
+import { ISuperToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
+import { ISuperfluidPool } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
+import { PoolConfig } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
 
+/* Local Imports */
 import { IStakingPool } from "src/interfaces/core/IStakingPool.sol";
 
+/* Library Settings */
 using SuperTokenV1Library for ISuperToken;
 using SafeCast for int256;
 
