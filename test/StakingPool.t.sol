@@ -13,6 +13,7 @@ contract StakingPoolTest is EdenTestBase {
     ISuperToken internal _childToken;
 
     uint256 internal constant _TOKEN_SUPPLY = 1_000_000_000 ether;
+    uint256 internal constant _DOWNSCALER = 1e18;
 
     function setUp() public override {
         super.setUp();
@@ -94,9 +95,53 @@ contract StakingPoolTest is EdenTestBase {
         );
     }
 
-    function test_increaseStake() public { }
-    function test_increaseStake_not_staked_yet() public { }
-    function test_increaseStake_invalid_stake_amount() public { }
+    function test_increaseStake(
+        uint256 initialStakedAmount,
+        uint256 initialLockingPeriod,
+        uint256 amountToStake,
+        uint256 increaseStakeTimestamp
+    ) public {
+        initialStakedAmount = bound(initialStakedAmount, _stakingPool.MINIMUM_STAKE_AMOUNT(), _TOKEN_SUPPLY / 2);
+        amountToStake = bound(amountToStake, _stakingPool.MINIMUM_STAKE_AMOUNT(), _TOKEN_SUPPLY / 2);
+        initialLockingPeriod =
+            bound(initialLockingPeriod, _stakingPool.MINIMUM_LOCKING_PERIOD(), _stakingPool.MAXIMUM_LOCKING_PERIOD());
+        increaseStakeTimestamp = bound(increaseStakeTimestamp, 0, _stakingPool.MAXIMUM_LOCKING_PERIOD() * 10);
+
+        _stake(ALICE, initialStakedAmount, initialLockingPeriod);
+
+        vm.warp(block.timestamp + increaseStakeTimestamp);
+
+        bool withBonus =
+            !(block.timestamp + _stakingPool.MINIMUM_LOCKING_PERIOD() > _stakingPool.getStakingInfo(ALICE).lockedUntil);
+        _increaseStake(ALICE, amountToStake, withBonus);
+    }
+
+    function test_increaseStake_not_staked_yet(uint256 amountToStake) public {
+        amountToStake = bound(amountToStake, _stakingPool.MINIMUM_STAKE_AMOUNT(), _TOKEN_SUPPLY / 2);
+        _increaseStake_should_revert(ALICE, amountToStake, abi.encodeWithSelector(IStakingPool.NOT_STAKED_YET.selector));
+    }
+
+    function test_increaseStake_invalid_stake_amount(
+        uint256 initialStakedAmount,
+        uint256 initialLockingPeriod,
+        uint256 amountToStake,
+        uint256 increaseStakeTimestamp
+    ) public {
+        initialStakedAmount = bound(initialStakedAmount, _stakingPool.MINIMUM_STAKE_AMOUNT(), _TOKEN_SUPPLY / 2);
+        amountToStake = bound(amountToStake, 0, _stakingPool.MINIMUM_STAKE_AMOUNT() - 1);
+        initialLockingPeriod =
+            bound(initialLockingPeriod, _stakingPool.MINIMUM_LOCKING_PERIOD(), _stakingPool.MAXIMUM_LOCKING_PERIOD());
+        increaseStakeTimestamp = bound(increaseStakeTimestamp, 0, _stakingPool.MAXIMUM_LOCKING_PERIOD() * 10);
+
+        _stake(ALICE, initialStakedAmount, initialLockingPeriod);
+
+        vm.warp(block.timestamp + increaseStakeTimestamp);
+
+        _increaseStake_should_revert(
+            ALICE, amountToStake, abi.encodeWithSelector(IStakingPool.INVALID_STAKE_AMOUNT.selector)
+        );
+    }
+
     function test_unstake() public { }
     function test_unstake_insufficient_staked_amount() public { }
     function test_unstake_tokens_still_locked() public { }
@@ -140,14 +185,57 @@ contract StakingPoolTest is EdenTestBase {
         vm.stopPrank();
 
         assertEq(_stakingPool.getStakingInfo(staker).stakedAmount, amountToStake, "Staked amount mismatch");
-        assertEq(
-            _stakingPool.getStakingInfo(staker).multiplier,
-            _stakingPool.calculateMultiplier(lockingPeriod),
-            "Multiplier mismatch"
-        );
+
         assertEq(
             _stakingPool.getStakingInfo(staker).lockedUntil, block.timestamp + lockingPeriod, "Locked until mismatch"
         );
+    }
+
+    function _increaseStake(address staker, uint256 amountToStake, bool withBonus) internal {
+        dealSuperToken(ADMIN, staker, _childToken, amountToStake);
+
+        uint256 initialStakedAmount = _stakingPool.getStakingInfo(staker).stakedAmount;
+        uint256 initialLockedUntil = _stakingPool.getStakingInfo(staker).lockedUntil;
+        uint128 initialUnits = _stakingPool.distributionPool().getUnits(staker);
+
+        assertGt(initialStakedAmount, 0, "Initial staked amount should be greater than 0");
+        assertGt(initialLockedUntil, 0, "Unlocking Date should be greater than 0");
+        assertGt(initialUnits, 0, "Initial units should be greater than 0");
+
+        vm.startPrank(staker);
+        _childToken.approve(address(_stakingPool), amountToStake);
+        _stakingPool.increaseStake(amountToStake);
+        vm.stopPrank();
+
+        uint256 expectedMultiplier = withBonus
+            ? _stakingPool.calculateMultiplier(_stakingPool.getStakingInfo(staker).lockedUntil - block.timestamp)
+            : _stakingPool.BASE_MULTIPLIER();
+
+        uint128 expectedNewUnits =
+            uint128((amountToStake / _DOWNSCALER) * expectedMultiplier / _stakingPool.BASE_MULTIPLIER());
+
+        assertEq(_stakingPool.distributionPool().getUnits(staker), initialUnits + expectedNewUnits, "Units mismatch");
+
+        assertEq(
+            _stakingPool.getStakingInfo(staker).stakedAmount,
+            initialStakedAmount + amountToStake,
+            "Staked amount mismatch"
+        );
+
+        assertEq(
+            _stakingPool.getStakingInfo(staker).lockedUntil, initialLockedUntil, "Unlocking Date should not change"
+        );
+    }
+
+    function _increaseStake_should_revert(address staker, uint256 amountToStake, bytes memory revertWith) internal {
+        dealSuperToken(ADMIN, staker, _childToken, amountToStake);
+
+        vm.startPrank(staker);
+        _childToken.approve(address(_stakingPool), amountToStake);
+
+        vm.expectRevert(revertWith);
+        _stakingPool.increaseStake(amountToStake);
+        vm.stopPrank();
     }
 
     function _stake_should_revert(address staker, uint256 amountToStake, uint256 lockingPeriod, bytes memory revertWith)
