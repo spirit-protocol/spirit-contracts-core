@@ -23,6 +23,7 @@ interface IStakingPool {
     function child() external view returns (ISuperToken);
     function REWARD_CONTROLLER() external view returns (address);
     function distributionPool() external view returns (ISuperfluidPool);
+    function STREAM_OUT_DURATION() external view returns (uint256);
     function MINIMUM_LOCKING_PERIOD() external view returns (uint256);
     function MAXIMUM_LOCKING_PERIOD() external view returns (uint256);
     function MINIMUM_STAKE_AMOUNT() external view returns (uint256);

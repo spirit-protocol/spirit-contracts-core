@@ -2,9 +2,12 @@
 pragma solidity ^0.8.26;
 
 import { ISuperToken } from "@superfluid-finance/ethereum-contracts/contracts/superfluid/SuperToken.sol";
-import { console } from "forge-std/console.sol";
+
+import { SafeCast } from "@openzeppelin-v5/contracts/utils/math/SafeCast.sol";
 import { IStakingPool } from "src/interfaces/core/IStakingPool.sol";
 import { EdenTestBase } from "test/base/EdenTestBase.t.sol";
+
+using SafeCast for int256;
 
 contract StakingPoolTest is EdenTestBase {
 
@@ -331,8 +334,43 @@ contract StakingPoolTest is EdenTestBase {
         );
     }
 
-    function test_refreshDistributionFlow() public { }
-    function test_refreshDistributionFlow_not_reward_controller() public { }
+    function test_refreshDistributionFlow(uint256 amountToDistribute) public {
+        amountToDistribute = bound(amountToDistribute, 1e18, _TOKEN_SUPPLY);
+
+        dealSuperToken(TREASURY, address(_rewardController), _spirit, amountToDistribute);
+
+        vm.startPrank(address(_rewardController));
+        _spirit.transfer(address(_stakingPool), amountToDistribute);
+        _stakingPool.refreshDistributionFlow();
+        vm.stopPrank();
+
+        int96 expectedFlowRate = int256(amountToDistribute / _stakingPool.STREAM_OUT_DURATION()).toInt96();
+        assertEq(
+            _stakingPool.distributionPool().getMemberFlowRate(address(_stakingPool)),
+            expectedFlowRate,
+            "Flow rate mismatch"
+        );
+    }
+
+    function test_refreshDistributionFlow_not_reward_controller(address notRewardController, uint256 amountToDistribute)
+        public
+    {
+        vm.assume(notRewardController != address(_rewardController));
+        vm.assume(notRewardController != address(_stakingPool));
+        vm.assume(notRewardController != address(_stakingPool.distributionPool()));
+        vm.assume(notRewardController != address(0));
+
+        amountToDistribute = bound(amountToDistribute, 1e18, _TOKEN_SUPPLY);
+
+        dealSuperToken(TREASURY, notRewardController, _spirit, amountToDistribute);
+
+        vm.startPrank(notRewardController);
+        _spirit.transfer(address(_stakingPool), amountToDistribute);
+
+        vm.expectRevert(abi.encodeWithSelector(IStakingPool.NOT_REWARD_CONTROLLER.selector));
+        _stakingPool.refreshDistributionFlow();
+        vm.stopPrank();
+    }
 
     function test_calculateMultiplier_characteristics(uint256 lockingPeriod) public view {
         lockingPeriod =
