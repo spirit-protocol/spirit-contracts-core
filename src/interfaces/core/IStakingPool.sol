@@ -26,7 +26,8 @@ interface IStakingPool {
     function MINIMUM_LOCKING_PERIOD() external view returns (uint256);
     function MAXIMUM_LOCKING_PERIOD() external view returns (uint256);
     function MINIMUM_STAKE_AMOUNT() external view returns (uint256);
-    function BASE_MULTIPLIER() external view returns (uint256);
+    function MIN_MULTIPLIER() external view returns (uint256);
+    function MAX_MULTIPLIER() external view returns (uint256);
     function MULTIPLIER_RANGE() external view returns (uint256);
     function TIME_RANGE() external view returns (uint256);
 
@@ -39,8 +40,6 @@ interface IStakingPool {
     function extendLockingPeriod(uint256 newLockingPeriod) external;
 
     function calculateMultiplier(uint256 lockingPeriod) external pure returns (uint256 multiplier);
-
-    function retrieveMultiplier(uint128 units, uint256 stakedAmount) external pure returns (uint256 multiplier);
 
     function unstake(uint256 amount) external;
 

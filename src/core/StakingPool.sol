@@ -30,8 +30,9 @@ contract StakingPool is IStakingPool, Initializable {
 
     uint256 public constant TIME_RANGE = MAXIMUM_LOCKING_PERIOD - MINIMUM_LOCKING_PERIOD;
 
-    uint256 public constant BASE_MULTIPLIER = 10_000;
-    uint256 public constant MULTIPLIER_RANGE = 350_000;
+    uint256 public constant MIN_MULTIPLIER = 10_000;
+    uint256 public constant MAX_MULTIPLIER = 360_000;
+    uint256 public constant MULTIPLIER_RANGE = MAX_MULTIPLIER - MIN_MULTIPLIER;
 
     uint256 private constant _DOWNSCALER = 1e18;
 
@@ -93,7 +94,7 @@ contract StakingPool is IStakingPool, Initializable {
         uint256 multiplier = calculateMultiplier(lockingPeriod);
 
         // Calculate units with multiplier applied (multiplier is in basis points)
-        uint128 units = uint128((amount / _DOWNSCALER) * multiplier / BASE_MULTIPLIER);
+        uint128 units = uint128((amount / _DOWNSCALER) * multiplier / MIN_MULTIPLIER);
 
         // Store staking information
         userStakingInfo.stakedAmount = amount;
@@ -118,17 +119,17 @@ contract StakingPool is IStakingPool, Initializable {
 
         uint256 multiplier;
 
-        // Use the base multiplier if:
-        // the locking period is less than the minimum locking period
-        // or the locking period is already expired
+        // Use the min multiplier if:
+        // 1. increasing stake less than 1 week before the locking period expires)
+        // 2. the locking period is already expired
         if (block.timestamp + MINIMUM_LOCKING_PERIOD > userStakingInfo.lockedUntil) {
-            multiplier = BASE_MULTIPLIER;
+            multiplier = MIN_MULTIPLIER;
         } else {
             multiplier = calculateMultiplier(userStakingInfo.lockedUntil - block.timestamp);
         }
 
         // Calculate units with multiplier applied
-        uint128 unitsToAdd = uint128((amount / _DOWNSCALER) * multiplier / BASE_MULTIPLIER);
+        uint128 unitsToAdd = uint128((amount / _DOWNSCALER) * multiplier / MIN_MULTIPLIER);
 
         // Store staking information
         userStakingInfo.stakedAmount += amount;
@@ -157,22 +158,23 @@ contract StakingPool is IStakingPool, Initializable {
         // Calculate the multiplier for the new locking period
         uint256 multiplier = calculateMultiplier(newLockingPeriod);
 
-        // Get the current units of the user
-        uint128 currentUnits = distributionPool.getUnits(msg.sender);
-
         // Calculate units with multiplier applied
-        uint128 newUnits =
-            currentUnits + uint128((userStakingInfo.stakedAmount / _DOWNSCALER) * multiplier / BASE_MULTIPLIER);
+        uint128 unitsToAdd = uint128((userStakingInfo.stakedAmount / _DOWNSCALER) * multiplier / MIN_MULTIPLIER);
 
         // Update the user's locking details
         userStakingInfo.lockedUntil = block.timestamp + newLockingPeriod;
 
         // Update the user's units
-        distributionPool.updateMemberUnits(msg.sender, newUnits);
+        distributionPool.increaseMemberUnits(msg.sender, unitsToAdd);
     }
 
     function unstake(uint256 amount) external {
         StakingInfo storage userStakingInfo = _stakingInfo[msg.sender];
+
+        // Check if the amount is valid
+        if (amount < MINIMUM_STAKE_AMOUNT) {
+            revert INVALID_STAKE_AMOUNT();
+        }
 
         // Check if user has staked tokens
         if (userStakingInfo.stakedAmount < amount) {
@@ -184,10 +186,10 @@ contract StakingPool is IStakingPool, Initializable {
             revert TOKENS_STILL_LOCKED();
         }
 
-        uint256 multiplier = retrieveMultiplier(distributionPool.getUnits(msg.sender), userStakingInfo.stakedAmount);
-
-        // Calculate units to remove (with original multiplier applied, multiplier is in basis points)
-        uint128 unitsToRemove = uint128((amount * multiplier) / (BASE_MULTIPLIER * _DOWNSCALER));
+        // Get current units and calculate units to remove proportionally
+        // This maintains the exact proportional relationship between units and staked amount
+        uint128 currentUnits = distributionPool.getUnits(msg.sender);
+        uint128 unitsToRemove = uint128((amount * currentUnits) / userStakingInfo.stakedAmount);
 
         // Update member units
         distributionPool.decreaseMemberUnits(msg.sender, unitsToRemove);
@@ -224,11 +226,7 @@ contract StakingPool is IStakingPool, Initializable {
      * @return multiplier The bonus multiplier in basis points (10_000 = 1x, 360_000 = 36x)
      */
     function calculateMultiplier(uint256 lockingPeriod) public pure returns (uint256 multiplier) {
-        multiplier = BASE_MULTIPLIER + ((lockingPeriod - MINIMUM_LOCKING_PERIOD) * MULTIPLIER_RANGE) / TIME_RANGE;
-    }
-
-    function retrieveMultiplier(uint128 units, uint256 stakedAmount) public pure returns (uint256 multiplier) {
-        multiplier = (uint256(units) * BASE_MULTIPLIER * _DOWNSCALER) / stakedAmount;
+        multiplier = MIN_MULTIPLIER + ((lockingPeriod - MINIMUM_LOCKING_PERIOD) * MULTIPLIER_RANGE) / TIME_RANGE;
     }
 
     function getStakingInfo(address staker) external view returns (StakingInfo memory stakingInfo) {
