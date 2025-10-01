@@ -51,6 +51,7 @@ contract RewardController is IRewardController, AccessControl, Initializable {
     }
 
     function initialize(address admin) external initializer {
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
         _grantRole(DISTRIBUTOR_ROLE, admin);
     }
