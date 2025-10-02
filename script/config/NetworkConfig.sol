@@ -40,6 +40,10 @@ library NetworkConfig {
         });
     }
 
+    function getLocalConfig() internal pure returns (EdenDeploymentConfig memory) {
+        return getBaseMainnetConfig();
+    }
+
     /**
      * @dev Get Base Sepolia configuration
      */

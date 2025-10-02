@@ -14,6 +14,9 @@ import { SuperfluidFrameworkDeployer } from
     "@superfluid-finance/ethereum-contracts/contracts/utils/SuperfluidFrameworkDeployer.t.sol";
 
 /* Local Imports */
+import { EdenDeployer } from "script/EdenDeployer.sol";
+import { NetworkConfig } from "script/config/NetworkConfig.sol";
+
 import { RewardController } from "src/core/RewardController.sol";
 import { StakingPool } from "src/core/StakingPool.sol";
 import { EdenFactory } from "src/factory/EdenFactory.sol";
@@ -31,6 +34,7 @@ contract EdenTestBase is Test {
     SuperfluidFrameworkDeployer internal _deployer;
     SuperfluidFrameworkDeployer.Framework internal _sf;
 
+    address internal immutable DEPLOYER = makeAddr("DEPLOYER");
     address internal immutable TREASURY = makeAddr("TREASURY");
     address internal immutable ADMIN = makeAddr("ADMIN");
     address internal immutable ALICE = makeAddr("ALICE");
@@ -47,42 +51,22 @@ contract EdenTestBase is Test {
 
         /// FIXME : add UNISWAP V4 Deployment here
 
+        NetworkConfig.EdenDeploymentConfig memory config = NetworkConfig.getLocalConfig();
+
+        config.admin = ADMIN;
+        config.distributor = ADMIN;
+        config.treasury = TREASURY;
+        config.superTokenFactory = address(_sf.superTokenFactory);
+
         // Deploy the contracts under test
-        _deployAll();
-    }
-
-    function _deployAll() internal {
-        // Contracts Deployment
-
-        // Deploy the Spirit Token Contract
-        vm.prank(TREASURY);
-        _spirit = _deployer.deployPureSuperToken("Spirit Token", "SPIRIT", 1_000_000_000 ether);
-
-        // Deploy the Reward Controller contract
-        RewardController rewardControllerLogic = new RewardController(_spirit);
-        ERC1967Proxy rewardControllerProxy = new ERC1967Proxy(
-            address(rewardControllerLogic), abi.encodeWithSelector(RewardController.initialize.selector, ADMIN)
-        );
-
-        _rewardController = RewardController(address(rewardControllerProxy));
-
-        // Deploy the Staking Pool Beacon contract
-        address stakingPoolLogicAddress = address(new StakingPool(_spirit, address(_rewardController)));
-        UpgradeableBeacon stakingPoolBeacon = new UpgradeableBeacon(stakingPoolLogicAddress, ADMIN);
-
-        // Deploy the Eden Factory contract
-        EdenFactory edenFactoryLogic =
-            new EdenFactory(address(stakingPoolBeacon), _rewardController, _sf.superTokenFactory);
-        ERC1967Proxy edenFactoryProxy =
-            new ERC1967Proxy(address(edenFactoryLogic), abi.encodeWithSelector(EdenFactory.initialize.selector, ADMIN));
-        _edenFactory = EdenFactory(address(edenFactoryProxy));
-
-        // Contracts Configuration
-
-        // Grant the FACTORY_ROLE to the Eden Factory
-        vm.startPrank(ADMIN);
-        _rewardController.grantRole(_rewardController.FACTORY_ROLE(), address(_edenFactory));
+        // _deployAll();
+        vm.startPrank(DEPLOYER);
+        EdenDeployer.EdenDeploymentResult memory result = EdenDeployer.deployAll(config, DEPLOYER);
         vm.stopPrank();
+
+        _edenFactory = EdenFactory(result.edenFactoryProxy);
+        _rewardController = RewardController(result.rewardControllerProxy);
+        _spirit = ISuperToken(result.spirit);
     }
 
     function dealSuperToken(address from, address to, ISuperToken token, uint256 amount) internal {
