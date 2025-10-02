@@ -14,7 +14,6 @@ contract DeployEden is Script {
     function _startBroadcast() internal returns (address deployer) {
         vm.startBroadcast();
 
-        // This is the way to get deployer address in foundry:
         (, deployer,) = vm.readCallers();
     }
 
@@ -30,13 +29,16 @@ contract DeployEden is Script {
 
         console.log("");
         console.log("===> DEPLOYMENT CONFIGURATION");
-        console.log(" --- Admin address         :", config.admin);
-        console.log(" --- Treasury address      :", config.treasury);
-        console.log(" --- Distributor address   :", config.distributor);
-        console.log(" --- Super Token Factory   :", config.superTokenFactory);
-        console.log(" --- Spirit Token Name     :", config.spiritTokenName);
-        console.log(" --- Spirit Token Symbol   :", config.spiritTokenSymbol);
-        console.log(" --- Spirit Token Supply   :", config.spiritTokenSupply / 1e18);
+        console.log(" --- Admin address                 :", config.admin);
+        console.log(" --- Treasury address              :", config.treasury);
+        console.log(" --- Distributor address           :", config.distributor);
+        console.log(" --- Super Token Factory           :", config.superTokenFactory);
+        console.log(" --- UniswapV4 Position Manager    :", config.positionManager);
+        console.log(" --- UniswapV4 Pool Manager        :", config.poolManager);
+        console.log(" --- Permit2 address               :", config.permit2);
+        console.log(" --- Spirit Token Name             :", config.spiritTokenName);
+        console.log(" --- Spirit Token Symbol           :", config.spiritTokenSymbol);
+        console.log(" --- Spirit Token Supply           :", config.spiritTokenSupply / 1e18);
 
         // Start broadcasting transactions
         address deployer = _startBroadcast();
