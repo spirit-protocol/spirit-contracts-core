@@ -12,6 +12,7 @@ via_ir = false
 remappings = [
     "@superfluid-finance/ethereum-contracts/=lib/superfluid-protocol-monorepo/packages/ethereum-contracts/",
     "@superfluid-finance/solidity-semantic-money/=lib/superfluid-protocol-monorepo/packages/solidity-semantic-money/",
+    "@superfluid-finance/automation-contracts/=lib/superfluid-protocol-monorepo/packages/automation-contracts/",
     "@openzeppelin/contracts/=lib/openzeppelin-contracts-v4/contracts/",
     "@openzeppelin-v5/contracts/=lib/openzeppelin-contracts-v5/contracts/",
     "@uniswap/v4-core/=lib/uniswap-v4-core/",
