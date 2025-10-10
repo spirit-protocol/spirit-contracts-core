@@ -47,14 +47,14 @@ contract EdenFactoryTest is EdenTestBase {
 
         assertEq(
             newChildToken.balanceOf(address(manager)),
-            475_000_000 ether,
-            "UniswapV4 Pool Manager should have 475M CHILD tokens (Liquidity)"
+            _edenFactory.DEFAULT_LIQUIDITY_SUPPLY(),
+            "UniswapV4 Pool Manager should have 250M CHILD tokens (Liquidity)"
         );
 
         assertEq(
             newChildToken.balanceOf(address(ADMIN)),
-            25_000_000 ether,
-            "Admin should have 500M CHILD tokens (ADMIN share)"
+            _edenFactory.CHILD_TOTAL_SUPPLY() - _edenFactory.DEFAULT_LIQUIDITY_SUPPLY() - 500_000_000 ether,
+            "Admin should have 250M CHILD tokens (ADMIN share)"
         );
 
         assertEq(

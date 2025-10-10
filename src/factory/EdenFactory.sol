@@ -55,7 +55,7 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
     uint160 public constant SQRT_PRICE_1_1 = 79_228_162_514_264_337_593_543_950_336;
 
     uint256 public constant CHILD_TOTAL_SUPPLY = 1_000_000_000 ether;
-    uint256 public constant DEFAULT_LIQUIDITY_SUPPLY = 475_000_000 ether;
+    uint256 public constant DEFAULT_LIQUIDITY_SUPPLY = 250_000_000 ether;
 
     /// FIXME : Confirm this value
     uint24 public constant DEFAULT_POOL_FEE = 10_000;
@@ -112,11 +112,43 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
         // Update the reward controller configuration
         REWARD_CONTROLLER.setStakingPool(address(child), stakingPool);
 
-        // Create the Uniswap V4 pool and mint liquidity position for 475M CHILD (single sided)
+        // Create the Uniswap V4 pool and mint liquidity position for 250M CHILD (single sided)
         /// FIXME : pass SQRT Price to this function args.
         _setupUniswapPool(address(child), DEFAULT_LIQUIDITY_SUPPLY, SQRT_PRICE_1_1);
 
-        // Transfer the remaining 25M CHILD to the caller (admin)
+        // Transfer the remaining 250M CHILD to the caller (admin)
+        // FIXME : this 250M CHILD transfer should be airdropped to the SPIRIT Holders -> add Airstreams integration
+        child.transfer(msg.sender, child.balanceOf(address(this)));
+
+        // FIXME : Add event emission here
+    }
+
+    // FIXME: overload this function with custom liquidity supply/airdrop supply
+    function createChild(
+        string memory name,
+        string memory symbol,
+        address artist,
+        address agent,
+        uint256 specialAllocation
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) returns (ISuperToken child, IStakingPool stakingPool) {
+        // Ensure the special allocation is not greater than the default liquidity supply
+        if (specialAllocation > DEFAULT_LIQUIDITY_SUPPLY) revert INVALID_SPECIAL_ALLOCATION();
+
+        // deploy the new child token with default 1B supply to the caller (admin)
+        child = ISuperToken(_deployToken(name, symbol, CHILD_TOTAL_SUPPLY));
+
+        // Deploy a new StakingPool contract associated to the child token
+        stakingPool = IStakingPool(_deployStakingPool(address(child), artist, agent));
+
+        // Update the reward controller configuration
+        REWARD_CONTROLLER.setStakingPool(address(child), stakingPool);
+
+        // Create the Uniswap V4 pool and mint liquidity position for 250M CHILD (single sided)
+        /// FIXME : pass SQRT Price to this function args.
+        _setupUniswapPool(address(child), DEFAULT_LIQUIDITY_SUPPLY - specialAllocation, SQRT_PRICE_1_1);
+
+        // FIXME : this 250M CHILD transfer should be airdropped to the SPIRIT Holders -> add Airstreams integration
+        // Transfer the remaining 250M CHILD to the caller (admin)
         child.transfer(msg.sender, child.balanceOf(address(this)));
 
         // FIXME : Add event emission here

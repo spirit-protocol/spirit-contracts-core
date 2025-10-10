@@ -5,6 +5,15 @@ import { IStakingPool } from "src/interfaces/core/IStakingPool.sol";
 
 interface IEdenFactory {
 
+    //     ______           __                     ______
+    //    / ____/_  _______/ /_____  ____ ___     / ____/_____________  __________
+    //   / /   / / / / ___/ __/ __ \/ __ `__ \   / __/ / ___/ ___/ __ \/ ___/ ___/
+    //  / /___/ /_/ (__  ) /_/ /_/ / / / / / /  / /___/ /  / /  / /_/ / /  (__  )
+    //  \____/\__,_/____/\__/\____/_/ /_/ /_/  /_____/_/  /_/   \____/_/  /____/
+
+    /// @notice Thrown when the special allocation is greater than the default liquidity supply
+    error INVALID_SPECIAL_ALLOCATION();
+
     //      ______     __                        __   ______                 __  _
     //     / ____/  __/ /____  _________  ____ _/ /  / ____/_  ______  _____/ /_(_)___  ____  _____
     //    / __/ | |/_/ __/ _ \/ ___/ __ \/ __ `/ /  / /_  / / / / __ \/ ___/ __/ / __ \/ __ \/ ___/
@@ -14,5 +23,15 @@ interface IEdenFactory {
     function createChild(string memory name, string memory symbol, address artist, address agent)
         external
         returns (ISuperToken child, IStakingPool stakingPool);
+
+    function createChild(
+        string memory name,
+        string memory symbol,
+        address artist,
+        address agent,
+        uint256 specialAllocation
+    ) external returns (ISuperToken child, IStakingPool stakingPool);
+
+    function upgradeTo(address newImplementation, bytes calldata data) external;
 
 }
