@@ -13,9 +13,9 @@ import { ISuperTokenFactory } from
 /* Uniswap Imports */
 import { IHooks } from "@uniswap/v4-core/src/interfaces/IHooks.sol";
 import { IPoolManager } from "@uniswap/v4-core/src/interfaces/IPoolManager.sol";
-
 import { StateLibrary } from "@uniswap/v4-core/src/libraries/StateLibrary.sol";
 import { TickMath } from "@uniswap/v4-core/src/libraries/TickMath.sol";
+import { CurrencyLibrary } from "@uniswap/v4-core/src/types/Currency.sol";
 import { Currency } from "@uniswap/v4-core/src/types/Currency.sol";
 import { PoolIdLibrary } from "@uniswap/v4-core/src/types/PoolId.sol";
 import { PoolKey } from "@uniswap/v4-core/src/types/PoolKey.sol";
@@ -68,7 +68,7 @@ library EdenDeployer {
         // Transfer the SPIRIT Tokens to the Treasury
         /// FIXME : Either this or create airstreams for community airdrop
         ISuperToken(results.spirit).transfer(config.treasury, ISuperToken(results.spirit).balanceOf(deployer));
-        
+
         // Deploy the Infrastructure Contracts
         results = _deployInfrastructure(config, results);
 
@@ -112,6 +112,7 @@ library EdenDeployer {
         // Deploy the Eden Factory contract
         EdenFactory edenFactoryLogic = new EdenFactory(
             address(stakingPoolBeacon),
+            ISuperToken(results.spirit),
             IRewardController(address(rewardControllerProxy)),
             ISuperTokenFactory(config.superTokenFactory),
             IPositionManager(config.positionManager),
@@ -137,25 +138,16 @@ library EdenDeployer {
         internal
         returns (EdenDeploymentResult memory)
     {
-        // Pool ordering
-        bool spiritIsZero = results.spirit < config.weth;
-
-        // Ensure tokens are in the correct order (lower address first)
-        Currency currency0 = spiritIsZero ? Currency.wrap(results.spirit) : Currency.wrap(config.weth);
-        Currency currency1 = spiritIsZero ? Currency.wrap(config.weth) : Currency.wrap(results.spirit);
-
         // Create the pool key
         results.spiritEthPoolKey = PoolKey({
-            currency0: currency0,
-            currency1: currency1,
+            currency0: CurrencyLibrary.ADDRESS_ZERO,
+            currency1: Currency.wrap(results.spirit),
             fee: config.spiritPoolFee,
             tickSpacing: config.spiritTickSpacing,
             hooks: IHooks(address(0))
         });
 
-        // Flip tick if SPIRIT is not Uniswap Pool's token0
-        int24 tick = spiritIsZero ? config.spiritInitialTick : -config.spiritInitialTick;
-        uint160 sqrtPriceX96 = TickMath.getSqrtPriceAtTick(tick);
+        uint160 sqrtPriceX96 = TickMath.getSqrtPriceAtTick(config.spiritInitialTick);
 
         // Initialize the pool
         IPositionManager(config.positionManager).initializePool(results.spiritEthPoolKey, sqrtPriceX96);

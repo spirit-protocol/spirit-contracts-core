@@ -71,6 +71,7 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
 
     constructor(
         address _stakingPoolBeacon,
+        ISuperToken _spirit,
         IRewardController _rewardController,
         ISuperTokenFactory _superTokenFactory,
         IPositionManager _positionManager,
@@ -78,6 +79,7 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
         IPermit2 _permit2
     ) {
         STAKING_POOL_BEACON = UpgradeableBeacon(_stakingPoolBeacon);
+        SPIRIT = _spirit;
         REWARD_CONTROLLER = _rewardController;
         SUPER_TOKEN_FACTORY = _superTokenFactory;
         POSITION_MANAGER = _positionManager;
@@ -95,6 +97,7 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
     //   / /____>  </ /_/  __/ /  / / / / /_/ / /  / __/ / /_/ / / / / /__/ /_/ / /_/ / / / (__  )
     //  /_____/_/|_|\__/\___/_/  /_/ /_/\__,_/_/  /_/    \__,_/_/ /_/\___/\__/_/\____/_/ /_/____/
 
+    // FIXME: overload this function with custom liquidity supply/airdrop supply
     function createChild(string memory name, string memory symbol, address artist, address agent)
         external
         onlyRole(DEFAULT_ADMIN_ROLE)
@@ -113,7 +116,7 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
         /// FIXME : pass SQRT Price to this function args.
         _setupUniswapPool(address(child), DEFAULT_LIQUIDITY_SUPPLY, SQRT_PRICE_1_1);
 
-        // Transfer the remaining 500M CHILD to the caller (admin)
+        // Transfer the remaining 25M CHILD to the caller (admin)
         child.transfer(msg.sender, child.balanceOf(address(this)));
 
         // FIXME : Add event emission here
