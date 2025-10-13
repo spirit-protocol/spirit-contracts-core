@@ -6,6 +6,8 @@ import { ERC1967Proxy } from "@openzeppelin-v5/contracts/proxy/ERC1967/ERC1967Pr
 import { UpgradeableBeacon } from "@openzeppelin-v5/contracts/proxy/beacon/UpgradeableBeacon.sol";
 
 /* Superfluid Imports */
+import { IVestingSchedulerV3 } from
+    "@superfluid-finance/automation-contracts/scheduler/contracts/interface/IVestingSchedulerV3.sol";
 import { ISuperToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperToken.sol";
 import { ISuperTokenFactory } from
     "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperTokenFactory.sol";
@@ -32,6 +34,8 @@ import { EdenFactory } from "src/factory/EdenFactory.sol";
 import { IRewardController } from "src/interfaces/core/IRewardController.sol";
 import { ISpiritToken } from "src/interfaces/token/ISpiritToken.sol";
 import { SpiritToken } from "src/token/SpiritToken.sol";
+import { SpiritVesting } from "src/vesting/SpiritVesting.sol";
+import { SpiritVestingFactory } from "src/vesting/SpiritVestingFactory.sol";
 
 library EdenDeployer {
 
@@ -43,6 +47,7 @@ library EdenDeployer {
         address stakingPoolBeacon;
         address edenFactoryLogic;
         address edenFactoryProxy;
+        address spiritVestingFactory;
         PoolKey spiritEthPoolKey;
     }
 
@@ -54,6 +59,9 @@ library EdenDeployer {
 
         // Deploy the Spirit Token Contract
         results = _deploySpiritToken(config, deployer);
+
+        // Deploy the Spirit Vesting Factory Contract
+        results = _deployVestingFactory(config, results);
 
         // Setup UniswapV4 SPIRIT/ETH pool
         results = _setupUniswapPool(config, results);
@@ -92,6 +100,31 @@ library EdenDeployer {
             deployer,
             config.spiritTokenSupply
         );
+    }
+
+    function _deployVestingFactory(
+        NetworkConfig.EdenDeploymentConfig memory config,
+        EdenDeploymentResult memory results
+    ) internal returns (EdenDeploymentResult memory) {
+        // Deploy the Spirit Vesting Factory Contract
+        SpiritVestingFactory vestingFactory = new SpiritVestingFactory(
+            IVestingSchedulerV3(config.vestingScheduler), ISuperToken(results.spirit), config.treasury
+        );
+
+        // Deploy an unused SpiritVesting contract for explorer verification purposes
+        new SpiritVesting(
+            IVestingSchedulerV3(config.vestingScheduler),
+            ISuperToken(results.spirit),
+            config.treasury,
+            uint32(block.timestamp + 5200 weeks),
+            1,
+            1,
+            uint32(block.timestamp + 10_400 weeks)
+        );
+
+        results.spiritVestingFactory = address(vestingFactory);
+
+        return results;
     }
 
     function _deployInfrastructure(
