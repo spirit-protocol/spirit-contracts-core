@@ -1,0 +1,43 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      {
+        "name": "vestingScheduler",
+        "type": "address",
+        "internalType": "contract IVestingSchedulerV3"
+      },
+      {
+        "name": "spirit",
+        "type": "address",
+        "internalType": "contract ISuperToken"
+      },
+      {
+        "name": "recipient",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "cliffDate",
+        "type": "uint32",
+        "internalType": "uint32"
+      },
+      {
+        "name": "flowRate",
+        "type": "int96",
+        "internalType": "int96"
+      },
+      {
+        "name": "cliffAmount",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "endDate",
+        "type": "uint32",
+        "internalType": "uint32"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  }
+]
