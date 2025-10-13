@@ -56,11 +56,7 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
 
     uint256 public constant CHILD_TOTAL_SUPPLY = 1_000_000_000 ether;
     uint256 public constant DEFAULT_LIQUIDITY_SUPPLY = 250_000_000 ether;
-
-    /// FIXME : Confirm this value
     uint24 public constant DEFAULT_POOL_FEE = 10_000;
-
-    /// FIXME : Confirm this value
     int24 public constant DEFAULT_TICK_SPACING = 200;
 
     //     ______                 __                  __
@@ -97,33 +93,14 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
     //   / /____>  </ /_/  __/ /  / / / / /_/ / /  / __/ / /_/ / / / / /__/ /_/ / /_/ / / / (__  )
     //  /_____/_/|_|\__/\___/_/  /_/ /_/\__,_/_/  /_/    \__,_/_/ /_/\___/\__/_/\____/_/ /_/____/
 
-    // FIXME: overload this function with custom liquidity supply/airdrop supply
     function createChild(string memory name, string memory symbol, address artist, address agent)
         external
         onlyRole(DEFAULT_ADMIN_ROLE)
         returns (ISuperToken child, IStakingPool stakingPool)
     {
-        // deploy the new child token with default 1B supply to the caller (admin)
-        child = ISuperToken(_deployToken(name, symbol, CHILD_TOTAL_SUPPLY));
-
-        // Deploy a new StakingPool contract associated to the child token
-        stakingPool = IStakingPool(_deployStakingPool(address(child), artist, agent));
-
-        // Update the reward controller configuration
-        REWARD_CONTROLLER.setStakingPool(address(child), stakingPool);
-
-        // Create the Uniswap V4 pool and mint liquidity position for 250M CHILD (single sided)
-        /// FIXME : pass SQRT Price to this function args.
-        _setupUniswapPool(address(child), DEFAULT_LIQUIDITY_SUPPLY, SQRT_PRICE_1_1);
-
-        // Transfer the remaining 250M CHILD to the caller (admin)
-        // FIXME : this 250M CHILD transfer should be airdropped to the SPIRIT Holders -> add Airstreams integration
-        child.transfer(msg.sender, child.balanceOf(address(this)));
-
-        // FIXME : Add event emission here
+        (child, stakingPool) = _createChild(name, symbol, artist, agent, 0);
     }
 
-    // FIXME: overload this function with custom liquidity supply/airdrop supply
     function createChild(
         string memory name,
         string memory symbol,
@@ -132,8 +109,28 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
         uint256 specialAllocation
     ) external onlyRole(DEFAULT_ADMIN_ROLE) returns (ISuperToken child, IStakingPool stakingPool) {
         // Ensure the special allocation is not greater than the default liquidity supply
-        if (specialAllocation > DEFAULT_LIQUIDITY_SUPPLY) revert INVALID_SPECIAL_ALLOCATION();
+        if (specialAllocation >= DEFAULT_LIQUIDITY_SUPPLY) revert INVALID_SPECIAL_ALLOCATION();
 
+        (child, stakingPool) = _createChild(name, symbol, artist, agent, specialAllocation);
+    }
+
+    function upgradeTo(address newImplementation, bytes calldata data) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        ERC1967Utils.upgradeToAndCall(newImplementation, data);
+    }
+
+    //      ____      __                        __   ______                 __  _
+    //     /  _/___  / /____  _________  ____ _/ /  / ____/_  ______  _____/ /_(_)___  ____  _____
+    //     / // __ \/ __/ _ \/ ___/ __ \/ __ `/ /  / /_  / / / / __ \/ ___/ __/ / __ \/ __ \/ ___/
+    //   _/ // / / / /_/  __/ /  / / / / /_/ / /  / __/ / /_/ / / / / /__/ /_/ / /_/ / / / (__  )
+    //  /___/_/ /_/\__/\___/_/  /_/ /_/\__,_/_/  /_/    \__,_/_/ /_/\___/\__/_/\____/_/ /_/____/
+
+    function _createChild(
+        string memory name,
+        string memory symbol,
+        address artist,
+        address agent,
+        uint256 specialAllocation
+    ) internal returns (ISuperToken child, IStakingPool stakingPool) {
         // deploy the new child token with default 1B supply to the caller (admin)
         child = ISuperToken(_deployToken(name, symbol, CHILD_TOTAL_SUPPLY));
 
@@ -153,16 +150,6 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
 
         // FIXME : Add event emission here
     }
-
-    function upgradeTo(address newImplementation, bytes calldata data) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        ERC1967Utils.upgradeToAndCall(newImplementation, data);
-    }
-
-    //      ____      __                        __   ______                 __  _
-    //     /  _/___  / /____  _________  ____ _/ /  / ____/_  ______  _____/ /_(_)___  ____  _____
-    //     / // __ \/ __/ _ \/ ___/ __ \/ __ `/ /  / /_  / / / / __ \/ ___/ __/ / __ \/ __ \/ ___/
-    //   _/ // / / / /_/  __/ /  / / / / /_/ / /  / __/ / /_/ / / / / /__/ /_/ / /_/ / / / (__  )
-    //  /___/_/ /_/\__/\___/_/  /_/ /_/\__,_/_/  /_/    \__,_/_/ /_/\___/\__/_/\____/_/ /_/____/
 
     function _deployToken(string memory name, string memory symbol, uint256 supply)
         internal
