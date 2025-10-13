@@ -69,12 +69,14 @@ contract EdenFactoryTest is EdenTestBase {
         );
         assertEq(
             newStakingPool.distributionPool().getUnits(address(ARTIST)),
-            newStakingPool.calculateMultiplier(52 weeks) * 250_000_000 / newStakingPool.MIN_MULTIPLIER(),
+            newStakingPool.calculateMultiplier(newStakingPool.STAKEHOLDER_LOCKING_PERIOD()) * 250_000_000
+                / newStakingPool.MIN_MULTIPLIER(),
             "ARTIST should have 250M CHILD tokens locked for 12 months worth of units"
         );
         assertEq(
             newStakingPool.distributionPool().getUnits(address(AGENT)),
-            newStakingPool.calculateMultiplier(52 weeks) * 250_000_000 / newStakingPool.MIN_MULTIPLIER(),
+            newStakingPool.calculateMultiplier(newStakingPool.STAKEHOLDER_LOCKING_PERIOD()) * 250_000_000
+                / newStakingPool.MIN_MULTIPLIER(),
             "AGENT should have 250M CHILD tokens locked for 12 months worth of units"
         );
     }
@@ -131,12 +133,14 @@ contract EdenFactoryTest is EdenTestBase {
         );
         assertEq(
             newStakingPool.distributionPool().getUnits(address(ARTIST)),
-            newStakingPool.calculateMultiplier(52 weeks) * 250_000_000 / newStakingPool.MIN_MULTIPLIER(),
+            newStakingPool.calculateMultiplier(newStakingPool.STAKEHOLDER_LOCKING_PERIOD()) * 250_000_000
+                / newStakingPool.MIN_MULTIPLIER(),
             "ARTIST should have 250M CHILD tokens locked for 12 months worth of units"
         );
         assertEq(
             newStakingPool.distributionPool().getUnits(address(AGENT)),
-            newStakingPool.calculateMultiplier(52 weeks) * 250_000_000 / newStakingPool.MIN_MULTIPLIER(),
+            newStakingPool.calculateMultiplier(newStakingPool.STAKEHOLDER_LOCKING_PERIOD()) * 250_000_000
+                / newStakingPool.MIN_MULTIPLIER(),
             "AGENT should have 250M CHILD tokens locked for 12 months worth of units"
         );
     }
