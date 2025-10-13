@@ -169,4 +169,10 @@ interface IStakingPool {
      */
     function TIME_RANGE() external view returns (uint256);
 
+    /**
+     * @notice Gets stakeholder locking period
+     * @return STAKEHOLDER_LOCKING_PERIOD Stakeholder locking period
+     */
+    function STAKEHOLDER_LOCKING_PERIOD() external view returns (uint256);
+
 }

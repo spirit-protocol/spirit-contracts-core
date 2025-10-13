@@ -36,9 +36,6 @@ contract StakingPool is IStakingPool, Initializable {
     /// @notice Reward Controller contract address
     address public immutable REWARD_CONTROLLER;
 
-    /// @notice Child token associated to this staking pool
-    ISuperToken public child;
-
     /// @notice Minimum stake amount (1 CHILD Token)
     uint256 public constant MINIMUM_STAKE_AMOUNT = 1 ether;
 
@@ -63,20 +60,23 @@ contract StakingPool is IStakingPool, Initializable {
     /// @notice Multiplier range (used for multiplier calculation)
     uint256 public constant MULTIPLIER_RANGE = MAX_MULTIPLIER - MIN_MULTIPLIER;
 
-    /// @notice Downscaler (used for GDA pool units calculation)
-    uint256 private constant _DOWNSCALER = 1e18;
+    /// @notice Stakeholder locking period (1 year)
+    uint256 public constant STAKEHOLDER_LOCKING_PERIOD = 52 weeks;
 
     /// @notice Stakeholder amount (250M SPIRIT)
     uint256 private constant _STAKEHOLDER_AMOUNT = 250_000_000 ether;
 
-    /// @notice Stakeholder locking period (1 year)
-    uint256 private constant _STAKEHOLDER_LOCKING_PERIOD = 52 weeks;
+    /// @notice Downscaler (used for GDA pool units calculation)
+    uint256 private constant _DOWNSCALER = 1e18;
 
     //     _____ __        __
     //    / ___// /_____ _/ /____  _____
     //    \__ \/ __/ __ `/ __/ _ \/ ___/
     //   ___/ / /_/ /_/ / /_/  __(__  )
     //  /____/\__/\__,_/\__/\___/____/
+
+    /// @notice Child token associated to this staking pool
+    ISuperToken public child;
 
     /// @notice Staking GDA pool
     ISuperfluidPool public distributionPool;
@@ -117,8 +117,8 @@ contract StakingPool is IStakingPool, Initializable {
         // Note : ensure that even if every stakers unstake, the distribution flow will keep running
         distributionPool.updateMemberUnits(address(this), 1);
 
-        _stake(artist, _STAKEHOLDER_AMOUNT, _STAKEHOLDER_LOCKING_PERIOD);
-        _stake(agent, _STAKEHOLDER_AMOUNT, _STAKEHOLDER_LOCKING_PERIOD);
+        _stake(artist, _STAKEHOLDER_AMOUNT, STAKEHOLDER_LOCKING_PERIOD);
+        _stake(agent, _STAKEHOLDER_AMOUNT, STAKEHOLDER_LOCKING_PERIOD);
     }
 
     //      ______     __                        __   ______                 __  _
