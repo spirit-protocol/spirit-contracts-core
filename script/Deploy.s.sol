@@ -39,6 +39,9 @@ contract DeployEden is Script {
         console.log(" --- Spirit Token Name             :", config.spiritTokenName);
         console.log(" --- Spirit Token Symbol           :", config.spiritTokenSymbol);
         console.log(" --- Spirit Token Supply           :", config.spiritTokenSupply / 1e18);
+        console.log(" --- SPIRIT/ETH Initial Tick       :", config.spiritInitialTick);
+        console.log(" --- SPIRIT/ETH Tick Spacing       :", config.spiritTickSpacing);
+        console.log(" --- SPIRIT/ETH Pool Fee           :", config.spiritPoolFee);
 
         // Start broadcasting transactions
         address deployer = _startBroadcast();
@@ -55,10 +58,11 @@ contract DeployEden is Script {
 
         console.log("");
         console.log("===> DEPLOYMENT RESULTS");
-        console.log(" --- Spirit Token         :", result.spirit);
-        console.log(" --- Reward Controller    :", result.rewardControllerProxy);
-        console.log(" --- Staking Pool         :", result.stakingPoolBeacon);
-        console.log(" --- Eden Factory         :", result.edenFactoryProxy);
+        console.log(" --- Spirit Token              :", result.spirit);
+        console.log(" --- Reward Controller         :", result.rewardControllerProxy);
+        console.log(" --- Staking Pool              :", result.stakingPoolBeacon);
+        console.log(" --- Eden Factory              :", result.edenFactoryProxy);
+        console.log(" --- Spirit Vesting Factory    :", result.spiritVestingFactory);
         console.log("");
     }
 
