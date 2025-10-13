@@ -3,8 +3,8 @@
 pragma solidity ^0.8.26;
 
 /* Superfluid Imports */
-import { IVestingSchedulerV2 } from
-    "@superfluid-finance/automation-contracts/scheduler/contracts/interface/IVestingSchedulerV2.sol";
+import { IVestingSchedulerV3 } from
+    "@superfluid-finance/automation-contracts/scheduler/contracts/interface/IVestingSchedulerV3.sol";
 import { SuperTokenV1Library } from "@superfluid-finance/ethereum-contracts/contracts/apps/SuperTokenV1Library.sol";
 import { ISuperToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
 
@@ -33,7 +33,7 @@ contract SpiritVesting {
      * @param endDate The timestamp when the vesting schedule ends
      */
     constructor(
-        IVestingSchedulerV2 vestingScheduler,
+        IVestingSchedulerV3 vestingScheduler,
         ISuperToken spirit,
         address recipient,
         uint32 cliffDate,

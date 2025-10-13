@@ -4,8 +4,8 @@ pragma solidity ^0.8.26;
 import { SafeCast } from "@openzeppelin/contracts/utils/math/SafeCast.sol";
 
 /* Superfluid Imports */
-import { IVestingSchedulerV2 } from
-    "@superfluid-finance/automation-contracts/scheduler/contracts/interface/IVestingSchedulerV2.sol";
+import { IVestingSchedulerV3 } from
+    "@superfluid-finance/automation-contracts/scheduler/contracts/interface/IVestingSchedulerV3.sol";
 import { SuperTokenV1Library } from "@superfluid-finance/ethereum-contracts/contracts/apps/SuperTokenV1Library.sol";
 import { ISuperToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
 
@@ -29,7 +29,7 @@ contract SpiritVestingFactory is ISpiritVestingFactory {
     //  /___/_/ /_/ /_/_/ /_/ /_/\__,_/\__/\__,_/_.___/_/\___/   /____/\__/\__,_/\__/\___/____/
 
     /// @notice Superfluid Vesting Scheduler contract address
-    IVestingSchedulerV2 public immutable VESTING_SCHEDULER;
+    IVestingSchedulerV3 public immutable VESTING_SCHEDULER;
 
     /// @notice SPIRIT Token contract address
     ISuperToken public immutable SPIRIT;
@@ -67,7 +67,7 @@ contract SpiritVestingFactory is ISpiritVestingFactory {
      * @param token The SPIRIT token contract
      * @param treasuryAddress The treasury address
      */
-    constructor(IVestingSchedulerV2 vestingScheduler, ISuperToken token, address treasuryAddress) {
+    constructor(IVestingSchedulerV3 vestingScheduler, ISuperToken token, address treasuryAddress) {
         // Persist state variables
         VESTING_SCHEDULER = vestingScheduler;
         SPIRIT = token;
