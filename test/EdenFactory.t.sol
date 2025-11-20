@@ -23,7 +23,7 @@ contract EdenFactoryTest is EdenTestBase {
     function test_createChild() public {
         vm.prank(ADMIN);
         (ISuperToken newChildToken, IStakingPool newStakingPool) =
-            _edenFactory.createChild("New Child Token", "NEWCHILD", ARTIST, AGENT);
+            _edenFactory.createChild("New Child Token", "NEWCHILD", ARTIST, AGENT, bytes32(0));
 
         // State settings assertions
         assertNotEq(address(newChildToken), address(0), "Invalid child token address");
@@ -86,7 +86,7 @@ contract EdenFactoryTest is EdenTestBase {
 
         vm.prank(ADMIN);
         (ISuperToken newChildToken, IStakingPool newStakingPool) =
-            _edenFactory.createChild("New Child Token", "NEWCHILD", ARTIST, AGENT, specialAllocation);
+            _edenFactory.createChild("New Child Token", "NEWCHILD", ARTIST, AGENT, specialAllocation, bytes32(0));
 
         // State settings assertions
         assertNotEq(address(newChildToken), address(0), "Invalid child token address");
@@ -150,7 +150,7 @@ contract EdenFactoryTest is EdenTestBase {
 
         vm.prank(nonAdmin);
         vm.expectRevert();
-        _edenFactory.createChild("New Child Token", "NEWCHILD", ARTIST, AGENT);
+        _edenFactory.createChild("New Child Token", "NEWCHILD", ARTIST, AGENT, bytes32(0));
     }
 
     function test_createChild_invalid_special_allocation(uint256 specialAllocation) public {
@@ -159,7 +159,7 @@ contract EdenFactoryTest is EdenTestBase {
 
         vm.prank(ADMIN);
         vm.expectRevert(IEdenFactory.INVALID_SPECIAL_ALLOCATION.selector);
-        _edenFactory.createChild("New Child Token", "NEWCHILD", ARTIST, AGENT, specialAllocation);
+        _edenFactory.createChild("New Child Token", "NEWCHILD", ARTIST, AGENT, specialAllocation, bytes32(0));
     }
 
 }

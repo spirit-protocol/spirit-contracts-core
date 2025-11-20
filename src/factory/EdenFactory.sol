@@ -28,6 +28,12 @@ import { LiquidityAmounts } from "@uniswap/v4-periphery/src/libraries/LiquidityA
 /* Local Imports */
 import { IRewardController } from "src/interfaces/core/IRewardController.sol";
 import { IStakingPool } from "src/interfaces/core/IStakingPool.sol";
+import {
+    AirstreamConfig,
+    AirstreamExtendedConfig,
+    ClaimingWindow,
+    IAirstreamFactory
+} from "src/interfaces/external/IAirstreamFactory.sol";
 import { IEdenFactory } from "src/interfaces/factory/IEdenFactory.sol";
 import { IChildSuperToken } from "src/interfaces/token/IChildSuperToken.sol";
 import { ChildSuperToken } from "src/token/ChildSuperToken.sol";
@@ -51,11 +57,13 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
     IPositionManager public immutable POSITION_MANAGER;
     IPoolManager public immutable POOL_MANAGER;
     IPermit2 public immutable PERMIT2;
-
-    uint160 public constant SQRT_PRICE_1_1 = 79_228_162_514_264_337_593_543_950_336;
+    IAirstreamFactory public immutable AIRSTREAM_FACTORY;
 
     uint256 public constant CHILD_TOTAL_SUPPLY = 1_000_000_000 ether;
     uint256 public constant DEFAULT_LIQUIDITY_SUPPLY = 250_000_000 ether;
+    uint96 public constant AIRSTREAM_SUPPLY = 250_000_000 ether;
+    uint160 public constant SQRT_PRICE_1_1 = 79_228_162_514_264_337_593_543_950_336;
+    uint64 public constant AIRSTREAM_DURATION = 52 weeks;
     uint24 public constant DEFAULT_POOL_FEE = 10_000;
     int24 public constant DEFAULT_TICK_SPACING = 200;
 
@@ -72,7 +80,8 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
         ISuperTokenFactory _superTokenFactory,
         IPositionManager _positionManager,
         IPoolManager _poolManager,
-        IPermit2 _permit2
+        IPermit2 _permit2,
+        IAirstreamFactory _airstreamFactory
     ) {
         STAKING_POOL_BEACON = UpgradeableBeacon(_stakingPoolBeacon);
         SPIRIT = _spirit;
@@ -81,6 +90,7 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
         POSITION_MANAGER = _positionManager;
         POOL_MANAGER = _poolManager;
         PERMIT2 = _permit2;
+        AIRSTREAM_FACTORY = IAirstreamFactory(_airstreamFactory);
     }
 
     function initialize(address admin) external initializer {
@@ -93,12 +103,12 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
     //   / /____>  </ /_/  __/ /  / / / / /_/ / /  / __/ / /_/ / / / / /__/ /_/ / /_/ / / / (__  )
     //  /_____/_/|_|\__/\___/_/  /_/ /_/\__,_/_/  /_/    \__,_/_/ /_/\___/\__/_/\____/_/ /_/____/
 
-    function createChild(string memory name, string memory symbol, address artist, address agent)
+    function createChild(string memory name, string memory symbol, address artist, address agent, bytes32 merkleRoot)
         external
         onlyRole(DEFAULT_ADMIN_ROLE)
         returns (ISuperToken child, IStakingPool stakingPool)
     {
-        (child, stakingPool) = _createChild(name, symbol, artist, agent, 0);
+        (child, stakingPool) = _createChild(name, symbol, artist, agent, 0, merkleRoot);
     }
 
     function createChild(
@@ -106,12 +116,13 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
         string memory symbol,
         address artist,
         address agent,
-        uint256 specialAllocation
+        uint256 specialAllocation,
+        bytes32 merkleRoot
     ) external onlyRole(DEFAULT_ADMIN_ROLE) returns (ISuperToken child, IStakingPool stakingPool) {
         // Ensure the special allocation is not greater than the default liquidity supply
         if (specialAllocation >= DEFAULT_LIQUIDITY_SUPPLY) revert INVALID_SPECIAL_ALLOCATION();
 
-        (child, stakingPool) = _createChild(name, symbol, artist, agent, specialAllocation);
+        (child, stakingPool) = _createChild(name, symbol, artist, agent, specialAllocation, merkleRoot);
     }
 
     function upgradeTo(address newImplementation, bytes calldata data) external onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -129,7 +140,8 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
         string memory symbol,
         address artist,
         address agent,
-        uint256 specialAllocation
+        uint256 specialAllocation,
+        bytes32 merkleRoot
     ) internal returns (ISuperToken child, IStakingPool stakingPool) {
         // deploy the new child token with default 1B supply to the caller (admin)
         child = ISuperToken(_deployToken(name, symbol, CHILD_TOTAL_SUPPLY));
@@ -144,11 +156,40 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
         /// FIXME : pass SQRT Price to this function args.
         _setupUniswapPool(address(child), DEFAULT_LIQUIDITY_SUPPLY - specialAllocation, SQRT_PRICE_1_1);
 
-        // FIXME : this 250M CHILD transfer should be airdropped to the SPIRIT Holders -> add Airstreams integration
-        // Transfer the remaining 250M CHILD to the caller (admin)
-        child.transfer(msg.sender, child.balanceOf(address(this)));
+        // Deploy the Airstreams
+        _deployAirstream(name, address(child), merkleRoot);
 
-        // FIXME : Add event emission here
+        // Transfer the remaining balance (if any) to the caller (admin)
+        uint256 remainingBalance = child.balanceOf(address(this));
+
+        if (remainingBalance > 0) {
+            child.transfer(msg.sender, remainingBalance);
+        }
+    }
+
+    function _deployAirstream(string memory name, address childToken, bytes32 merkleRoot) internal {
+        AirstreamConfig memory config = AirstreamConfig({
+            name: name,
+            token: childToken,
+            merkleRoot: merkleRoot,
+            totalAmount: uint96(AIRSTREAM_SUPPLY),
+            duration: AIRSTREAM_DURATION
+        });
+
+        AirstreamExtendedConfig memory extendedConfig = AirstreamExtendedConfig({
+            superToken: childToken,
+            claimingWindow: ClaimingWindow({
+                startDate: uint64(block.timestamp),
+                duration: AIRSTREAM_DURATION,
+                treasury: msg.sender
+            }),
+            initialRewardPPM: 0,
+            feePPM: 0
+        });
+
+        ISuperToken(childToken).approve(address(AIRSTREAM_FACTORY), AIRSTREAM_SUPPLY);
+
+        AIRSTREAM_FACTORY.createExtendedAirstream(config, extendedConfig);
     }
 
     function _deployToken(string memory name, string memory symbol, uint256 supply)

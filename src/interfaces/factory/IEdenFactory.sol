@@ -20,7 +20,7 @@ interface IEdenFactory {
     //   / /____>  </ /_/  __/ /  / / / / /_/ / /  / __/ / /_/ / / / / /__/ /_/ / /_/ / / / (__  )
     //  /_____/_/|_|\__/\___/_/  /_/ /_/\__,_/_/  /_/    \__,_/_/ /_/\___/\__/_/\____/_/ /_/____/
 
-    function createChild(string memory name, string memory symbol, address artist, address agent)
+    function createChild(string memory name, string memory symbol, address artist, address agent, bytes32 merkleRoot)
         external
         returns (ISuperToken child, IStakingPool stakingPool);
 
@@ -29,7 +29,8 @@ interface IEdenFactory {
         string memory symbol,
         address artist,
         address agent,
-        uint256 specialAllocation
+        uint256 specialAllocation,
+        bytes32 merkleRoot
     ) external returns (ISuperToken child, IStakingPool stakingPool);
 
     function upgradeTo(address newImplementation, bytes calldata data) external;

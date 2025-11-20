@@ -32,6 +32,7 @@ import { RewardController } from "src/core/RewardController.sol";
 import { StakingPool } from "src/core/StakingPool.sol";
 import { EdenFactory } from "src/factory/EdenFactory.sol";
 import { IRewardController } from "src/interfaces/core/IRewardController.sol";
+import { IAirstreamFactory } from "src/interfaces/external/IAirstreamFactory.sol";
 import { ISpiritToken } from "src/interfaces/token/ISpiritToken.sol";
 import { SpiritToken } from "src/token/SpiritToken.sol";
 import { SpiritVesting } from "src/vesting/SpiritVesting.sol";
@@ -67,14 +68,12 @@ library EdenDeployer {
         results = _setupUniswapPool(config, results);
 
         // Mint the liquidity position for the SPIRIT/ETH pool
-        /// FIXME : This only deploy 1 slice of liquidity (38k to infinity MCAP) - consider BANGER Model
         _deployLiquidity(config, results);
 
         /// FIXME: Create Vesting For Team (?)
         /// FIXME: Create Vesting For Eden Ops (?)
 
         // Transfer the SPIRIT Tokens to the Treasury
-        /// FIXME : Either this or create airstreams for community airdrop
         ISuperToken(results.spirit).transfer(config.treasury, ISuperToken(results.spirit).balanceOf(deployer));
 
         // Deploy the Infrastructure Contracts
@@ -150,7 +149,8 @@ library EdenDeployer {
             ISuperTokenFactory(config.superTokenFactory),
             IPositionManager(config.positionManager),
             IPoolManager(config.poolManager),
-            IPermit2(config.permit2)
+            IPermit2(config.permit2),
+            IAirstreamFactory(config.airstreamFactory)
         );
         ERC1967Proxy edenFactoryProxy = new ERC1967Proxy(
             address(edenFactoryLogic), abi.encodeWithSelector(EdenFactory.initialize.selector, config.admin)
