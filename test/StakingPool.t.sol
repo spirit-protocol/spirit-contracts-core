@@ -25,7 +25,8 @@ contract StakingPoolTest is EdenTestBase {
 
         // Deploy and initialize the StakingPool
         vm.prank(ADMIN);
-        (_childToken, _stakingPool) = _edenFactory.createChild("Child Token", "CHILD", ARTIST, AGENT, bytes32(0));
+        (_childToken, _stakingPool) =
+            _edenFactory.createChild("Child Token", "CHILD", ARTIST, AGENT, _AVAILABLE_SUPPLY, bytes32(0));
     }
 
     function test_initialize() public view {

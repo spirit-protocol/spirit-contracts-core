@@ -54,9 +54,9 @@ contract EdenFactoryTest is EdenTestBase {
         );
 
         assertEq(
-            newChildToken.balanceOf(address(ADMIN)),
-            _edenFactory.CHILD_TOTAL_SUPPLY() - _edenFactory.DEFAULT_LIQUIDITY_SUPPLY() - 500_000_000 ether,
-            "Admin should have 250M CHILD tokens (ADMIN share)"
+            newChildToken.balanceOf(address(_airstreamFactory)),
+            _edenFactory.AIRSTREAM_SUPPLY(),
+            "Airstream Recipient should have 250M CHILD tokens (AIRSTREAM share)"
         );
 
         assertEq(
@@ -118,9 +118,14 @@ contract EdenFactoryTest is EdenTestBase {
 
         assertEq(
             newChildToken.balanceOf(address(ADMIN)),
-            _edenFactory.CHILD_TOTAL_SUPPLY() - _edenFactory.DEFAULT_LIQUIDITY_SUPPLY() + specialAllocation
-                - 500_000_000 ether,
-            "Admin should have 250M CHILD tokens (ADMIN share) plus the special allocation"
+            specialAllocation,
+            "Admin should have `specialAllocation` CHILD tokens (ADMIN share)"
+        );
+
+        assertEq(
+            newChildToken.balanceOf(address(_airstreamFactory)),
+            _edenFactory.AIRSTREAM_SUPPLY(),
+            "Airstream Recipient should have 250M CHILD tokens (AIRSTREAM share)"
         );
 
         assertEq(
