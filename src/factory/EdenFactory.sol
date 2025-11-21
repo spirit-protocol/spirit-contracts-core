@@ -62,7 +62,6 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
     uint256 public constant CHILD_TOTAL_SUPPLY = 1_000_000_000 ether;
     uint256 public constant DEFAULT_LIQUIDITY_SUPPLY = 250_000_000 ether;
     uint96 public constant AIRSTREAM_SUPPLY = 250_000_000 ether;
-    uint160 public constant SQRT_PRICE_1_1 = 79_228_162_514_264_337_593_543_950_336;
     uint64 public constant AIRSTREAM_DURATION = 52 weeks;
     uint24 public constant DEFAULT_POOL_FEE = 10_000;
     int24 public constant DEFAULT_TICK_SPACING = 200;
@@ -103,12 +102,15 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
     //   / /____>  </ /_/  __/ /  / / / / /_/ / /  / __/ / /_/ / / / / /__/ /_/ / /_/ / / / (__  )
     //  /_____/_/|_|\__/\___/_/  /_/ /_/\__,_/_/  /_/    \__,_/_/ /_/\___/\__/_/\____/_/ /_/____/
 
-    function createChild(string memory name, string memory symbol, address artist, address agent, bytes32 merkleRoot)
-        external
-        onlyRole(DEFAULT_ADMIN_ROLE)
-        returns (ISuperToken child, IStakingPool stakingPool)
-    {
-        (child, stakingPool) = _createChild(name, symbol, artist, agent, 0, merkleRoot);
+    function createChild(
+        string memory name,
+        string memory symbol,
+        address artist,
+        address agent,
+        bytes32 merkleRoot,
+        uint160 initialSqrtPriceX96
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) returns (ISuperToken child, IStakingPool stakingPool) {
+        (child, stakingPool) = _createChild(name, symbol, artist, agent, 0, merkleRoot, initialSqrtPriceX96);
     }
 
     function createChild(
@@ -117,12 +119,14 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
         address artist,
         address agent,
         uint256 specialAllocation,
-        bytes32 merkleRoot
+        bytes32 merkleRoot,
+        uint160 initialSqrtPriceX96
     ) external onlyRole(DEFAULT_ADMIN_ROLE) returns (ISuperToken child, IStakingPool stakingPool) {
         // Ensure the special allocation is not greater than the default liquidity supply
         if (specialAllocation >= DEFAULT_LIQUIDITY_SUPPLY) revert INVALID_SPECIAL_ALLOCATION();
 
-        (child, stakingPool) = _createChild(name, symbol, artist, agent, specialAllocation, merkleRoot);
+        (child, stakingPool) =
+            _createChild(name, symbol, artist, agent, specialAllocation, merkleRoot, initialSqrtPriceX96);
     }
 
     function upgradeTo(address newImplementation, bytes calldata data) external onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -141,7 +145,8 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
         address artist,
         address agent,
         uint256 specialAllocation,
-        bytes32 merkleRoot
+        bytes32 merkleRoot,
+        uint160 initialSqrtPriceX96
     ) internal returns (ISuperToken child, IStakingPool stakingPool) {
         // deploy the new child token with default 1B supply to the caller (admin)
         child = ISuperToken(_deployToken(name, symbol, CHILD_TOTAL_SUPPLY));
@@ -153,8 +158,7 @@ contract EdenFactory is IEdenFactory, Initializable, AccessControl {
         REWARD_CONTROLLER.setStakingPool(address(child), stakingPool);
 
         // Create the Uniswap V4 pool and mint liquidity position for 250M CHILD (single sided)
-        /// FIXME : pass SQRT Price to this function args.
-        _setupUniswapPool(address(child), DEFAULT_LIQUIDITY_SUPPLY - specialAllocation, SQRT_PRICE_1_1);
+        _setupUniswapPool(address(child), DEFAULT_LIQUIDITY_SUPPLY - specialAllocation, initialSqrtPriceX96);
 
         // Deploy the Airstreams
         _deployAirstream(name, address(child), merkleRoot);
