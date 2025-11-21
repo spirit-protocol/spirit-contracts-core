@@ -41,6 +41,9 @@ contract EdenTestBase is UniswapDeployer {
     address internal immutable ARTIST = makeAddr("ARTIST");
     address internal immutable AGENT = makeAddr("AGENT");
 
+    // 1:1 Sqrt Price
+    uint160 internal constant DEFAULT_SQRT_PRICE_X96 = 79_228_162_514_264_337_593_543_950_336;
+
     function setUp() public virtual override {
         // Superfluid Protocol Deployment Start
         vm.etch(ERC1820RegistryCompiled.at, ERC1820RegistryCompiled.bin);

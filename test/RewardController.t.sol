@@ -140,7 +140,8 @@ contract RewardControllerTest is EdenTestBase {
 
     function _setupChild() internal returns (ISuperToken childToken, IStakingPool stakingPool) {
         vm.prank(ADMIN);
-        (childToken, stakingPool) = _edenFactory.createChild("New Child Token", "NEWCHILD", ARTIST, AGENT, bytes32(0));
+        (childToken, stakingPool) =
+            _edenFactory.createChild("New Child Token", "NEWCHILD", ARTIST, AGENT, bytes32(0), DEFAULT_SQRT_PRICE_X96);
 
         assertEq(address(_rewardController.stakingPools(address(childToken))), address(stakingPool));
     }
