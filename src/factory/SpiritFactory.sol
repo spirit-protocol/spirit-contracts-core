@@ -34,11 +34,11 @@ import {
     ClaimingWindow,
     IAirstreamFactory
 } from "src/interfaces/external/IAirstreamFactory.sol";
-import { IEdenFactory } from "src/interfaces/factory/IEdenFactory.sol";
+import { ISpiritFactory } from "src/interfaces/factory/ISpiritFactory.sol";
 import { IChildSuperToken } from "src/interfaces/token/IChildSuperToken.sol";
 import { ChildSuperToken } from "src/token/ChildSuperToken.sol";
 
-contract EdenFactory is IEdenFactory, Initializable, AccessControl {
+contract SpiritFactory is ISpiritFactory, Initializable, AccessControl {
 
     //      ____                          __        __    __        _____ __        __
     //     /  _/___ ___  ____ ___  __  __/ /_____ _/ /_  / /__     / ___// /_____ _/ /____  _____

@@ -3,7 +3,7 @@ pragma solidity ^0.8.26;
 import { ISuperToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
 import { IStakingPool } from "src/interfaces/core/IStakingPool.sol";
 
-interface IEdenFactory {
+interface ISpiritFactory {
 
     //     ______           __                     ______
     //    / ____/_  _______/ /_____  ____ ___     / ____/_____________  __________
