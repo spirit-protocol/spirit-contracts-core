@@ -117,6 +117,7 @@ contract StakingPool is IStakingPool, Initializable {
         // Note : ensure that even if every stakers unstake, the distribution flow will keep running
         distributionPool.updateMemberUnits(address(this), 1);
 
+        // Stake the artist and agent tokens for the initial staking
         _stake(artist, _STAKEHOLDER_AMOUNT, STAKEHOLDER_LOCKING_PERIOD);
         _stake(agent, _STAKEHOLDER_AMOUNT, STAKEHOLDER_LOCKING_PERIOD);
     }
