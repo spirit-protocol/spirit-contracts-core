@@ -5,6 +5,24 @@ import { ISuperfluidPool } from "@superfluid-finance/ethereum-contracts/contract
 
 interface IStakingPool {
 
+    //      ______                 __
+    //     / ____/   _____  ____  / /______
+    //    / __/ | | / / _ \/ __ \/ __/ ___/
+    //   / /___ | |/ /  __/ / / / /_(__  )
+    //  /_____/ |___/\___/_/ /_/\__/____/
+
+    /// @notice Event emitted when a user stakes tokens
+    event Staked(address indexed staker, uint256 amount, uint256 lockingPeriod);
+
+    /// @notice Event emitted when a user increases their stake
+    event IncreasedStake(address indexed staker, uint256 amount);
+
+    /// @notice Event emitted when a user extends their locking period
+    event ExtendedLockingPeriod(address indexed staker, uint256 lockEndDate);
+
+    /// @notice Event emitted when a user unstakes tokens
+    event Unstaked(address indexed staker, uint256 unstakedAmount);
+
     //      ____        __        __
     //     / __ \____ _/ /_____ _/ /___  ______  ___  _____
     //    / / / / __ `/ __/ __ `/ __/ / / / __ \/ _ \/ ___/
