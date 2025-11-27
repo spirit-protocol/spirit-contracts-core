@@ -35,6 +35,7 @@ contract SpiritTestBase is UniswapDeployer {
 
     SuperfluidFrameworkDeployer internal _deployer;
     SuperfluidFrameworkDeployer.Framework internal _sf;
+    VestingSchedulerV3 internal _vestingScheduler;
     AirstreamFactoryMock internal _airstreamFactory;
 
     address internal immutable DEPLOYER = makeAddr("DEPLOYER");
@@ -53,6 +54,7 @@ contract SpiritTestBase is UniswapDeployer {
         _deployer = new SuperfluidFrameworkDeployer();
         _deployer.deployTestFramework();
         _sf = _deployer.getFramework();
+        _vestingScheduler = new VestingSchedulerV3(_sf.host);
         // Superfluid Protocol Deployment End
 
         // Deploy Uniswap Contracts
@@ -72,7 +74,7 @@ contract SpiritTestBase is UniswapDeployer {
         config.poolManager = address(manager);
         config.permit2 = address(permit2);
         config.airstreamFactory = address(_airstreamFactory);
-        config.vestingScheduler = address(new VestingSchedulerV3(_sf.host));
+        config.vestingScheduler = address(_vestingScheduler);
 
         // Deploy the contracts under test
         vm.startPrank(DEPLOYER);
