@@ -13,6 +13,16 @@ import { IStakingPool } from "src/interfaces/core/IStakingPool.sol";
  */
 interface ISpiritFactory {
 
+    //      ______                 __
+    //     / ____/   _____  ____  / /______
+    //    / __/ | | / / _ \/ __ \/ __/ ___/
+    //   / /___ | |/ /  __/ / / / /_(__  )
+    //  /_____/ |___/\___/_/ /_/\__/____/
+
+    event ChildTokenCreated(
+        address indexed child, address indexed stakingPool, address artist, address agent, bytes32 merkleRoot
+    );
+
     //     ______           __                     ______
     //    / ____/_  _______/ /_____  ____ ___     / ____/_____________  __________
     //   / /   / / / / ___/ __/ __ \/ __ `__ \   / __/ / ___/ ___/ __ \/ ___/ ___/
@@ -37,6 +47,8 @@ interface ISpiritFactory {
      * @param agent The address of the agent
      * @param merkleRoot The merkle root containing the airdrop allocations
      * @param initialSqrtPriceX96 The initial sqrt price X96 for the Uniswap V4 pool SPIRIT/CHILD
+     * @return child The address of the child token
+     * @return stakingPool The address of the staking pool
      */
     function createChild(
         string memory name,
@@ -57,6 +69,8 @@ interface ISpiritFactory {
      * @param specialAllocation The amount of tokens reserved for the special allocation
      * @param merkleRoot The merkle root containing the airdrop allocations
      * @param initialSqrtPriceX96 The initial sqrt price X96 for the Uniswap V4 pool SPIRIT/CHILD
+     * @return child The address of the child token
+     * @return stakingPool The address of the staking pool
      */
     function createChild(
         string memory name,

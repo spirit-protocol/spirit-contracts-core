@@ -216,6 +216,8 @@ contract SpiritFactory is ISpiritFactory, Initializable, AccessControl {
         if (remainingBalance > 0) {
             child.transfer(msg.sender, remainingBalance);
         }
+
+        emit ChildTokenCreated(address(child), address(stakingPool), artist, agent, merkleRoot);
     }
 
     function _deployAirstream(string memory name, address childToken, bytes32 merkleRoot) internal {
