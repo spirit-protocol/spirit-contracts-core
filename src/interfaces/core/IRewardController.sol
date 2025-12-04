@@ -55,7 +55,7 @@ interface IRewardController {
      * @dev Only callable by an address with the DISTRIBUTOR_ROLE.
      * @param child The child address for which to terminate the distribution flow
      */
-    function terminateDistributionFlow(address child) external;
+    function terminateDistribution(address child) external;
 
     /**
      * @notice Upgrades the RewardController contract to a new implementation.

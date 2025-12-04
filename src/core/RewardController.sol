@@ -119,7 +119,7 @@ contract RewardController is IRewardController, AccessControl, Initializable {
     }
 
     /// @inheritdoc IRewardController
-    function terminateDistributionFlow(address child) external onlyRole(DISTRIBUTOR_ROLE) {
+    function terminateDistribution(address child) external onlyRole(DISTRIBUTOR_ROLE) {
         // Gets the staking pool associated to the child
         IStakingPool stakingPool = stakingPools[child];
 
