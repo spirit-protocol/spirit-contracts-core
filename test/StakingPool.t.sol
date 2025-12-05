@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-import { IERC20 } from "@openzeppelin-v5/contracts/interfaces/IERC20.sol";
+import { Math } from "@openzeppelin-v5/contracts/utils/math/Math.sol";
 import { SafeCast } from "@openzeppelin-v5/contracts/utils/math/SafeCast.sol";
 import { SuperTokenV1Library } from "@superfluid-finance/ethereum-contracts/contracts/apps/SuperTokenV1Library.sol";
 import { ISuperToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperToken.sol";
-import { console } from "forge-std/console.sol";
 
 import { IStakingPool } from "src/interfaces/core/IStakingPool.sol";
 import { SpiritTestBase } from "test/base/SpiritTestBase.t.sol";
@@ -624,7 +623,9 @@ contract StakingPoolTest is SpiritTestBase {
         assertGt(initialStakingPoolBalance, 0, "Initial staking pool balance should be greater than 0");
 
         // Use proportional calculation to match the implementation
-        uint128 expectedRemovedUnits = uint128((amountToUnstake * initialUnits) / initialStakedAmount);
+        uint128 expectedCalculatedRemovedUnits =
+            uint128(Math.ceilDiv(amountToUnstake * initialUnits, initialStakedAmount));
+        uint128 expectedRemovedUnits = uint128(Math.min(expectedCalculatedRemovedUnits, initialUnits));
 
         vm.startPrank(staker);
         _stakingPool.unstake(amountToUnstake);
