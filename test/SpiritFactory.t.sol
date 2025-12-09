@@ -9,9 +9,11 @@ import { ISpiritFactory } from "src/interfaces/factory/ISpiritFactory.sol";
 import { SpiritTestBase } from "test/base/SpiritTestBase.t.sol";
 
 import { IHooks } from "@uniswap/v4-core/src/interfaces/IHooks.sol";
-
+import { BalanceDelta } from "@uniswap/v4-core/src/types/BalanceDelta.sol";
 import { Currency } from "@uniswap/v4-core/src/types/Currency.sol";
 import { PoolKey } from "@uniswap/v4-core/src/types/PoolKey.sol";
+
+import { console } from "forge-std/console.sol";
 import { ChildSuperToken } from "src/token/ChildSuperToken.sol";
 
 contract SpiritFactoryTest is SpiritTestBase {
@@ -165,6 +167,56 @@ contract SpiritFactoryTest is SpiritTestBase {
         _spiritFactory.createChild("New Child Token", "NEWCHILD", ARTIST, AGENT, bytes32(0), DEFAULT_SQRT_PRICE_X96);
     }
 
+    function test_createChild_swapLiquidity() public {
+        (ISuperToken childTokenA, ISuperToken childTokenB) = _helper_create2ChildTokens();
+
+        dealSuperToken(TREASURY, ADMIN, _spirit, 1000 ether);
+
+        vm.startPrank(ADMIN);
+        _spirit.approve(address(swapRouter), 1000 ether);
+        // Swap SPIRIT to ChildToken A
+        BalanceDelta deltaA = _helper_swapSpiritForChild(address(childTokenA), 50 ether);
+
+        // Swap SPIRIT to ChildToken B
+        BalanceDelta deltaB = _helper_swapSpiritForChild(address(childTokenB), 50 ether);
+
+        assertEq(deltaA.amount0(), deltaB.amount1());
+        assertEq(deltaA.amount1(), deltaB.amount0());
+        vm.stopPrank();
+    }
+
+    function _helper_create2ChildTokens() internal returns (ISuperToken childTokenA, ISuperToken childTokenB) {
+        vm.startPrank(ADMIN);
+        (childTokenA,,,) = _spiritFactory.createChild(
+            string(abi.encode("name", uint256(0))),
+            string(abi.encode("symbol", uint256(0))),
+            makeAddr("ARTIST_A"),
+            makeAddr("AGENT_A"),
+            bytes32(0),
+            DEFAULT_SQRT_PRICE_X96
+        );
+
+        bool tokenOrderA = address(childTokenA) < address(_spirit);
+        bool tokenOrderB = address(childTokenB) < address(_spirit);
+
+        while (address(childTokenB) == address(0) || tokenOrderB == tokenOrderA) {
+            uint256 i = 1;
+            (childTokenB,,,) = _spiritFactory.createChild(
+                string(abi.encode("name", i)),
+                string(abi.encode("symbol", i)),
+                makeAddr("ARTIST_B"),
+                makeAddr("AGENT_B"),
+                bytes32(0),
+                DEFAULT_SQRT_PRICE_X96
+            );
+
+            tokenOrderB = address(childTokenB) < address(_spirit);
+            ++i;
+        }
+
+        vm.stopPrank();
+    }
+
     function _helper_predictChildTokenAddress(string memory name, string memory symbol)
         internal
         view
@@ -175,6 +227,32 @@ contract SpiritFactoryTest is SpiritTestBase {
             abi.encodePacked(bytes1(0xff), address(_spiritFactory), salt, keccak256(type(ChildSuperToken).creationCode))
         );
         return address(uint160(uint256(hash)));
+    }
+
+    function _helper_swapSpiritForChild(address childToken, int256 amountIn) internal returns (BalanceDelta delta) {
+        bool zeroForOne;
+        PoolKey memory poolKey;
+        if (childToken < address(_spirit)) {
+            poolKey = PoolKey({
+                currency0: Currency.wrap(childToken),
+                currency1: Currency.wrap(address(_spirit)),
+                fee: _spiritFactory.DEFAULT_POOL_FEE(),
+                tickSpacing: _spiritFactory.DEFAULT_TICK_SPACING(),
+                hooks: IHooks(address(0))
+            });
+            zeroForOne = false;
+        } else {
+            poolKey = PoolKey({
+                currency0: Currency.wrap(address(_spirit)),
+                currency1: Currency.wrap(childToken),
+                fee: _spiritFactory.DEFAULT_POOL_FEE(),
+                tickSpacing: _spiritFactory.DEFAULT_TICK_SPACING(),
+                hooks: IHooks(address(0))
+            });
+            zeroForOne = true;
+        }
+
+        delta = swap(poolKey, zeroForOne, amountIn, bytes(""));
     }
 
 }
