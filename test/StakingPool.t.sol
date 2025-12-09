@@ -24,10 +24,12 @@ contract StakingPoolTest is SpiritTestBase {
     function setUp() public override {
         super.setUp();
 
+        bytes32 salt = keccak256(abi.encode("SALT_FOR_NEW_CHILD_TOKEN"));
+
         // Deploy and initialize the StakingPool
         vm.prank(ADMIN);
         (_childToken, _stakingPool,,) = _spiritFactory.createChild(
-            "Child Token", "CHILD", ARTIST, AGENT, _AVAILABLE_SUPPLY, bytes32(0), DEFAULT_SQRT_PRICE_X96
+            "Child Token", "CHILD", ARTIST, AGENT, _AVAILABLE_SUPPLY, bytes32(0), salt, DEFAULT_SQRT_PRICE_X96
         );
     }
 

@@ -34,14 +34,23 @@ contract SpiritFactoryTest is SpiritTestBase {
         internal
         returns (ISuperToken newChildToken, IStakingPool newStakingPool)
     {
+        bytes32 salt = keccak256(abi.encode("SALT_FOR_NEW_CHILD_TOKEN"));
+
         vm.prank(ADMIN);
         if (specialAllocation == 0) {
             (newChildToken, newStakingPool,,) = _spiritFactory.createChild(
-                "New Child Token", "NEWCHILD", ARTIST, AGENT, bytes32(0), DEFAULT_SQRT_PRICE_X96
+                "New Child Token", "NEWCHILD", ARTIST, AGENT, bytes32(0), salt, DEFAULT_SQRT_PRICE_X96
             );
         } else {
             (newChildToken, newStakingPool,,) = _spiritFactory.createChild(
-                "New Child Token", "NEWCHILD", ARTIST, AGENT, specialAllocation, bytes32(0), DEFAULT_SQRT_PRICE_X96
+                "New Child Token",
+                "NEWCHILD",
+                ARTIST,
+                AGENT,
+                specialAllocation,
+                bytes32(0),
+                salt,
+                DEFAULT_SQRT_PRICE_X96
             );
         }
 
@@ -111,6 +120,23 @@ contract SpiritFactoryTest is SpiritTestBase {
         _createChild(0);
     }
 
+    function test_createChild_already_deployed() public {
+        bytes32 salt1 = keccak256(abi.encode("SALT_FOR_NEW_CHILD_TOKEN_1"));
+
+        vm.startPrank(ADMIN);
+        _spiritFactory.createChild(
+            "New Child Token", "NEWCHILD", ARTIST, AGENT, bytes32(0), salt1, DEFAULT_SQRT_PRICE_X96
+        );
+
+        bytes32 salt2 = keccak256(abi.encode("SALT_FOR_NEW_CHILD_TOKEN_2"));
+        vm.expectRevert(ISpiritFactory.CHILD_TOKEN_ALREADY_DEPLOYED.selector);
+        _spiritFactory.createChild(
+            "New Child Token", "NEWCHILD", ARTIST, AGENT, bytes32(0), salt2, DEFAULT_SQRT_PRICE_X96
+        );
+
+        vm.stopPrank();
+    }
+
     function test_createChild_with_special_allocation(uint256 specialAllocation) public {
         specialAllocation = bound(specialAllocation, 1, _spiritFactory.DEFAULT_LIQUIDITY_SUPPLY() - 1);
 
@@ -120,27 +146,34 @@ contract SpiritFactoryTest is SpiritTestBase {
     function test_createChild_invalid_caller(address nonAdmin) public {
         vm.assume(_spiritFactory.hasRole(_spiritFactory.DEFAULT_ADMIN_ROLE(), nonAdmin) != true);
 
+        bytes32 salt = keccak256(abi.encode("SALT_FOR_NEW_CHILD_TOKEN"));
+
         vm.prank(nonAdmin);
         vm.expectRevert();
-        _spiritFactory.createChild("New Child Token", "NEWCHILD", ARTIST, AGENT, bytes32(0), DEFAULT_SQRT_PRICE_X96);
+        _spiritFactory.createChild(
+            "New Child Token", "NEWCHILD", ARTIST, AGENT, bytes32(0), salt, DEFAULT_SQRT_PRICE_X96
+        );
     }
 
     function test_createChild_invalid_special_allocation(uint256 specialAllocation) public {
         specialAllocation =
             bound(specialAllocation, _spiritFactory.DEFAULT_LIQUIDITY_SUPPLY(), _spiritFactory.CHILD_TOTAL_SUPPLY());
 
+        bytes32 salt = keccak256(abi.encode("SALT_FOR_NEW_CHILD_TOKEN"));
+
         vm.prank(ADMIN);
         vm.expectRevert(ISpiritFactory.INVALID_SPECIAL_ALLOCATION.selector);
         _spiritFactory.createChild(
-            "New Child Token", "NEWCHILD", ARTIST, AGENT, specialAllocation, bytes32(0), DEFAULT_SQRT_PRICE_X96
+            "New Child Token", "NEWCHILD", ARTIST, AGENT, specialAllocation, bytes32(0), salt, DEFAULT_SQRT_PRICE_X96
         );
     }
 
+    // Simulate a malicious actor "guessing" a child token address and initializing the pool with it
     function test_createChild_invalid_poolAlreadyInitialized() public {
-        // Simulate a malicious actor "guessing" a child token address and initializing the pool with it
+        bytes32 salt = keccak256(abi.encode("SALT_FOR_NEW_CHILD_TOKEN"));
 
         // Predict the child token address
-        address predictedChildTokenAddress = _helper_predictChildTokenAddress("New Child Token", "NEWCHILD");
+        address predictedChildTokenAddress = _helper_predictChildTokenAddress(salt);
 
         // Maliciously initalize the pool with predicted child token address
         Currency currency0 = predictedChildTokenAddress < address(_spirit)
@@ -164,7 +197,9 @@ contract SpiritFactoryTest is SpiritTestBase {
 
         vm.prank(ADMIN);
         vm.expectRevert(ISpiritFactory.POOL_INITIALIZATION_FAILED.selector);
-        _spiritFactory.createChild("New Child Token", "NEWCHILD", ARTIST, AGENT, bytes32(0), DEFAULT_SQRT_PRICE_X96);
+        _spiritFactory.createChild(
+            "New Child Token", "NEWCHILD", ARTIST, AGENT, bytes32(0), salt, DEFAULT_SQRT_PRICE_X96
+        );
     }
 
     function test_createChild_swapLiquidity() public {
@@ -186,14 +221,11 @@ contract SpiritFactoryTest is SpiritTestBase {
     }
 
     function _helper_create2ChildTokens() internal returns (ISuperToken childTokenA, ISuperToken childTokenB) {
+        bytes32 saltA = keccak256(abi.encode("0", uint256(0)));
+
         vm.startPrank(ADMIN);
         (childTokenA,,,) = _spiritFactory.createChild(
-            string(abi.encode("name", uint256(0))),
-            string(abi.encode("symbol", uint256(0))),
-            makeAddr("ARTIST_A"),
-            makeAddr("AGENT_A"),
-            bytes32(0),
-            DEFAULT_SQRT_PRICE_X96
+            "name A", "symbol A", makeAddr("ARTIST_A"), makeAddr("AGENT_A"), bytes32(0), saltA, DEFAULT_SQRT_PRICE_X96
         );
 
         bool tokenOrderA = address(childTokenA) < address(_spirit);
@@ -201,12 +233,16 @@ contract SpiritFactoryTest is SpiritTestBase {
 
         while (address(childTokenB) == address(0) || tokenOrderB == tokenOrderA) {
             uint256 i = 1;
+
+            bytes32 saltB = keccak256(abi.encode("i", i));
+
             (childTokenB,,,) = _spiritFactory.createChild(
-                string(abi.encode("name", i)),
-                string(abi.encode("symbol", i)),
+                string(abi.encodePacked("name B", uint256(i))),
+                string(abi.encodePacked("symbol B", uint256(i))),
                 makeAddr("ARTIST_B"),
                 makeAddr("AGENT_B"),
                 bytes32(0),
+                saltB,
                 DEFAULT_SQRT_PRICE_X96
             );
 
@@ -217,12 +253,7 @@ contract SpiritFactoryTest is SpiritTestBase {
         vm.stopPrank();
     }
 
-    function _helper_predictChildTokenAddress(string memory name, string memory symbol)
-        internal
-        view
-        returns (address predicted)
-    {
-        bytes32 salt = keccak256(abi.encode(name, symbol));
+    function _helper_predictChildTokenAddress(bytes32 salt) internal view returns (address predicted) {
         bytes32 hash = keccak256(
             abi.encodePacked(bytes1(0xff), address(_spiritFactory), salt, keccak256(type(ChildSuperToken).creationCode))
         );

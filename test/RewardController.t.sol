@@ -206,9 +206,12 @@ contract RewardControllerTest is SpiritTestBase {
     }
 
     function _setupChild() internal returns (ISuperToken childToken, IStakingPool stakingPool) {
+        bytes32 salt = keccak256(abi.encode("SALT_FOR_NEW_CHILD_TOKEN"));
+
         vm.prank(ADMIN);
-        (childToken, stakingPool, , ) =
-            _spiritFactory.createChild("New Child Token", "NEWCHILD", ARTIST, AGENT, bytes32(0), DEFAULT_SQRT_PRICE_X96);
+        (childToken, stakingPool,,) = _spiritFactory.createChild(
+            "New Child Token", "NEWCHILD", ARTIST, AGENT, bytes32(0), salt, DEFAULT_SQRT_PRICE_X96
+        );
 
         assertEq(address(_rewardController.stakingPools(address(childToken))), address(stakingPool));
     }
