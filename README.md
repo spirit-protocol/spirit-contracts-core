@@ -1,3 +1,14 @@
+# Spirit Protocol — Core Contracts
+
+This repository is a fork of the audited Superfluid implementation of the 
+Spirit Protocol smart contracts.
+
+Upstream: https://github.com/0xPilou/spirit-contracts  
+Audit (Simao): https://github.com/0xSimao-audits/reports/blob/main/2025-11-28-spirit-protocol.pdf  
+
+The contract logic is final and audited. All modifications should be 
+configuration-only (addresses, allocations, durations, pool parameters).
+
 ## Foundry
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
