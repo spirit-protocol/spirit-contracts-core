@@ -89,14 +89,23 @@ contract AirstreamIntegrationForkTest is SpiritTestBase {
             address controllerAddress
         )
     {
+        bytes32 salt = keccak256(abi.encode("SALT_FOR_NEW_CHILD_TOKEN"));
+
         vm.prank(ADMIN);
         if (specialAllocation == 0) {
             (newChildToken, newStakingPool, airstreamAddress, controllerAddress) = _spiritFactory.createChild(
-                "New Child Token", "NEWCHILD", ARTIST, AGENT, MERKLE_ROOT, DEFAULT_SQRT_PRICE_X96
+                "New Child Token", "NEWCHILD", ARTIST, AGENT, MERKLE_ROOT, salt, DEFAULT_SQRT_PRICE_X96
             );
         } else {
             (newChildToken, newStakingPool, airstreamAddress, controllerAddress) = _spiritFactory.createChild(
-                "New Child Token", "NEWCHILD", ARTIST, AGENT, specialAllocation, MERKLE_ROOT, DEFAULT_SQRT_PRICE_X96
+                "New Child Token",
+                "NEWCHILD",
+                ARTIST,
+                AGENT,
+                specialAllocation,
+                MERKLE_ROOT,
+                salt,
+                DEFAULT_SQRT_PRICE_X96
             );
         }
 
