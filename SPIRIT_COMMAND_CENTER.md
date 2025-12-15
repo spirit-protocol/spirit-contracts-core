@@ -12,7 +12,7 @@
 | **Pierre confirmation** (36x multiplier, LP allocation) | Seth → Pierre | ⏳ Awaiting response | Can't finalize whitepaper |
 | **Gigabrain Eden ID** | Gene | 🔴 Not requested yet | AGENTV Channel 3 |
 | **Aerodrome intro** | Seth (via Will Papper?) | 🔴 Not started | Ignition setup |
-| **35 wallet addresses** | Seth → recipients | 🔴 Outreach not sent | Vesting contracts |
+| **35 wallet addresses** | Seth → recipients | 🟡 Form verified ✓, templates ready, send outreach | Vesting contracts |
 | **Fundraising materials** | Seth | ✅ Done | One-pager, offer terms, 66-name CRM |
 
 ---
