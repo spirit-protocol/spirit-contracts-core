@@ -82,6 +82,7 @@
 
 ### Infrastructure
 - [x] AGENTV: 54 files committed, deployed to Vercel
+- [x] AGENTV: Redesigned with agent info panels (Dec 14) — Abraham, Solienne, Gigabrain, Spirit Universe
 - [x] spiritprotocol.io: beta branch pushed, staking guide live
 - [x] Staking page: https://beta.spiritprotocol.io/staking/
 - [x] Terminal `staking` command added
@@ -189,7 +190,7 @@
 | Production site | https://spiritprotocol.io | ✅ Live (main branch) |
 | Beta site | https://beta.spiritprotocol.io | ✅ Live (beta branch) |
 | Staking guide | https://spiritprotocol.io/staking/ | ✅ Live (production) |
-| AGENTV | https://agentvspiritprotocol-2dgh24dba-sethvibes.vercel.app | ✅ Deployed |
+| AGENTV | https://agentvspiritprotocol-faozvrzko-sethvibes.vercel.app | ✅ Deployed (Dec 14 - agent info panels) |
 | app.spiritprotocol.io | Does not exist | 🔴 Phase 2 |
 | Budget dashboard | https://spirit-protocol-budget.vercel.app | ✅ Live |
 
