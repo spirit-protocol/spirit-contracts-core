@@ -13,7 +13,7 @@
 | **Gigabrain Eden ID** | Gene | 🔴 Not requested yet | AGENTV Channel 3 |
 | **Aerodrome intro** | Seth (via Will Papper?) | 🔴 Not started | Ignition setup |
 | **35 wallet addresses** | Seth → recipients | 🔴 Outreach not sent | Vesting contracts |
-| **Fundraising materials** | Seth | 🔴 Not done | NYC meetings |
+| **Fundraising materials** | Seth | ✅ Done | One-pager, offer terms, 66-name CRM |
 
 ---
 
@@ -21,7 +21,7 @@
 
 | Repo | Local Path | Branch | Git Status | Last Commit |
 |------|------------|--------|------------|-------------|
-| **spiritprotocol.io** | `/Users/seth/spiritprotocol.io/` | beta (10 ahead of main) | ✅ Clean | Dec 13 - staking guide |
+| **spiritprotocol.io** | `/Users/seth/spiritprotocol.io/` | main | ✅ Clean | Dec 14 - merged beta, removed min investment |
 | **agentv.spiritprotocol.io** | `/Users/seth/agentv.spiritprotocol.io/` | main | ✅ Clean | Dec 13 - 54 files committed |
 | **spirit-contracts-core** | `/Users/seth/spirit-contracts-core/` | main | Modified | Source of truth |
 | **spirit-whitepaper-temp** | `/Users/seth/spirit-whitepaper-temp/` | - | Session notes only | - |
@@ -31,8 +31,13 @@
 /Users/seth/spirit-contracts-core/
 ├── SPIRIT_TOKENOMICS.md          ← THE source of truth (Dec 13)
 ├── SPIRIT_COMMAND_CENTER.md      ← THIS FILE
+├── SPIRIT_IDEAS_BACKLOG.md       ← Post-TGE ideas (Dec 14)
 ├── config/tokenomics.json        ← Machine-readable (Dec 10)
 ├── config/vesting_schedule.csv   ← Individual allocations
+├── fundraising/                  ← NYC fundraising materials (Dec 14)
+│   ├── ONE_PAGER.md              ← Cultural framing, 3 formats
+│   ├── OFFER_TERMS.md            ← Copy-paste terms
+│   └── PRESALE_INVESTORS.csv     ← 66 prospects, 11 tiers
 └── docs/
     ├── SPIRIT_STAKING_EXPLAINED.md    ← (Dec 14)
     └── DESIGN_YOUR_TOKEN_UTILITY.md   ← (Dec 14)
@@ -112,10 +117,10 @@
 - [ ] Gene: Gigabrain Eden ID
 
 ### NYC Fundraising (CRITICAL - STARTS TOMORROW)
-- [ ] One-pager PDF
+- [x] One-pager (cultural framing) — `fundraising/ONE_PAGER.md`
+- [x] Offer terms paragraph — `fundraising/OFFER_TERMS.md`
+- [x] CRM with 66 names — `fundraising/PRESALE_INVESTORS.csv`
 - [ ] 10-slide deck (have 15-slide visual deck already)
-- [ ] CRM with 30+ names
-- [ ] Offer terms paragraph
 - [ ] Data room link
 
 ---
@@ -181,7 +186,7 @@
 |----------|-----|--------|
 | Production site | https://spiritprotocol.io | ✅ Live (main branch) |
 | Beta site | https://beta.spiritprotocol.io | ✅ Live (beta branch) |
-| Staking guide | https://beta.spiritprotocol.io/staking/ | ✅ Live |
+| Staking guide | https://spiritprotocol.io/staking/ | ✅ Live (production) |
 | AGENTV | https://agentvspiritprotocol-2dgh24dba-sethvibes.vercel.app | ✅ Deployed |
 | app.spiritprotocol.io | Does not exist | 🔴 Phase 2 |
 | Budget dashboard | https://spirit-protocol-budget.vercel.app | ✅ Live |
@@ -251,7 +256,7 @@
 
 ### Blocked Until Response
 - Whitepaper finalization (Pierre)
-- Beta → main merge (need validation)
+- ~~Beta → main merge~~ ✅ DONE (Dec 14)
 - AGENTV Channel 3 (Gigabrain ID)
 
 ---
