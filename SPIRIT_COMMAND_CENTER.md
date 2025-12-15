@@ -32,6 +32,7 @@
 ├── SPIRIT_TOKENOMICS.md          ← THE source of truth (Dec 13)
 ├── SPIRIT_COMMAND_CENTER.md      ← THIS FILE
 ├── SPIRIT_IDEAS_BACKLOG.md       ← Post-TGE ideas (Dec 14)
+├── APP_PLANNING.md               ← app.spiritprotocol.io MVP plan (Dec 14)
 ├── config/tokenomics.json        ← Machine-readable (Dec 10)
 ├── config/vesting_schedule.csv   ← Individual allocations
 ├── fundraising/                  ← NYC fundraising materials (Dec 14)
@@ -93,6 +94,7 @@
 - [x] ADDRESS_COLLECTION_OUTREACH.md drafted (35 recipients)
 - [x] TREASURY_OPERATIONS_PLAN.md drafted
 - [x] Spirit Agent system prompt v5.0 (4 stakeholder modes)
+- [x] SUPERFLUID_HANDOFF_DEC_14.md created — Ready to send to Pierre
 
 ### Smart Contracts
 - [x] Audit complete (0xSimao, Nov 28)
@@ -140,7 +142,7 @@
 - **NYC fundraising push**
 
 ### Phase 2: Dec 21-28
-- app.spiritprotocol.io scaffold
+- app.spiritprotocol.io scaffold (see `APP_PLANNING.md`)
 - Base Sepolia dry-run
 - Aerodrome Ignition config
 
