@@ -95,21 +95,21 @@ If you could stake and unstake instantly, everyone would game the system. Lock p
 | Lock Period | Multiplier | Plain English |
 |-------------|------------|---------------|
 | 1 week | 1x | Minimum commitment, baseline rewards |
-| 1 month | ~1.2x | Slightly more rewards |
-| 3 months | ~1.7x | Meaningful commitment |
-| 6 months | ~2.4x | Serious believer |
-| 1 year | ~4.8x | Long-term aligned |
-| 2 years | ~13x | Very committed |
-| 3 years | 36x | Maximum commitment, maximum rewards |
+| 1 month | ~1.5x | Slightly more rewards |
+| 3 months | ~3x | Meaningful commitment |
+| 6 months | ~6x | Serious believer |
+| 1 year (52 weeks) | 12x | Long-term aligned |
+| 2 years | ~24x | Very committed |
+| 3 years (156 weeks) | 36x | Maximum commitment, maximum rewards |
 
 ### What the Multiplier Means
 
 The multiplier is your **weight** in the reward pool — not a direct earnings multiple.
 
 **Example:**
-- You stake 10,000 tokens for 3 months (1.7x multiplier)
-- Someone else stakes 10,000 tokens for 1 year (4.8x multiplier)
-- Same tokens, but they earn ~2.8x more rewards than you
+- You stake 10,000 tokens for 3 months (~3x multiplier)
+- Someone else stakes 10,000 tokens for 1 year (12x multiplier)
+- Same tokens, but they earn ~4x more rewards than you
 - Why? They committed longer.
 
 ### Choosing Your Lock Period

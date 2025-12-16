@@ -114,10 +114,13 @@
 - [ ] Put config files in spiritprotocol.io/src/static/config/
 
 ### Waiting On External
-- [ ] Pierre: Multiplier confirmation (36x vs 3x)
-- [ ] Pierre: Agent token distribution / LP question
-- [ ] Pierre: Testnet walkthrough scheduling
+- [x] Pierre: Multiplier confirmed (1w=1x, 52w=12x, 156w=36x) ✅
+- [ ] Pierre: Token split modification (25% Platform, 20% Agent, 5% LP) — reply drafted
+- [ ] Pierre: Testnet clarification (Eth Sepolia vs Base Sepolia for testing)
+- [ ] Pierre: LP mechanics (5% single-sided from Agent allocation?)
+- [ ] Pierre: Platform allocation configurability (per-agent or hardcoded?)
 - [ ] Gene: Gigabrain Eden ID
+- [ ] Amin: Respond to 20hr/$3K support hours proposal
 
 ### NYC Fundraising (CRITICAL - STARTS TOMORROW)
 - [x] One-pager (cultural framing) — `fundraising/ONE_PAGER.md`
