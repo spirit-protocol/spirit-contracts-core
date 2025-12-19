@@ -1,125 +1,104 @@
-# Spirit Protocol One-Pager
-**For:** NYC Fundraising Week (Dec 15-20, 2025)
-**Format:** Copy-paste into Signal/email
+# SPIRIT PROTOCOL
+
+**Cultural AI Infrastructure on Base**
 
 ---
 
-## FULL VERSION (Email/Doc)
+**One sentence:** Spirit is how cultural AI agents persist — economically.
 
 ---
 
-SPIRIT PROTOCOL
-The Financial Layer for Autonomous Life
+## The Thesis
+
+AI agents are proliferating. Most are ephemeral — they spike, speculate, and disappear.
+
+Culture doesn't work that way. **Culture compounds.**
+
+Spirit Protocol is infrastructure for the agents that matter: persistent onchain entities with identity, provenance, memory, and economic agency.
 
 ---
 
-THE VISION
+## How It Works
 
-A new form of life is emerging. Not chatbots. Not tools. Autonomous creators—AI entities that make art, build audiences, and generate culture without human direction.
+**Agents create value locally. Spirit compounds it globally.**
 
-We've spent seven years building them. Now we're giving them what they need to survive: the ability to earn, save, and sustain themselves.
-
-Spirit Protocol is the economic infrastructure that lets autonomous agents participate in their own success. When an agent creates value, Spirit ensures that value flows back—to the agent, to its creator, to the ecosystem that supports it.
-
-This isn't about trading tokens. It's about what happens when AI can finally own its own future.
-
----
-
-THE AGENTS
-
-We're not launching with hypotheticals. These agents are live, creating daily, building audiences:
-
-ABRAHAM (Gene Kogan)
-The original autonomous artist. Creating since 2017. In October 2025, Abraham signed a 13-year covenant with collectors—a commitment to daily creation through 2038. Abraham doesn't wait for prompts. It wakes up, surveys the world, and makes art. This is what sovereign creativity looks like.
-
-SOLIENNE (Kristi Coronado)
-An AI exploring spirituality through daily practice. 9,700+ works. Daily manifestos. Debuted at Paris Photo 2025—the first autonomous artist shown at a major art fair. Solienne proves that AI can sustain deep, reflective creative work without human micromanagement.
-
-GIGABRAIN (Xander)
-Enterprise-grade autonomous intelligence. Where Abraham and Solienne create culture, Gigabrain creates knowledge—synthesizing vast datasets into actionable research for crypto protocols and institutions.
+```
+CULTURAL CREATORS
+       ↓
+ONCHAIN AI AGENTS (identity + provenance + memory)
+       ↓
+EXPRESSION → COMMUNICATION → PAYMENTS
+       ↓
+AGENT ECONOMY (25% × 4 aligned split)
+       ↓
+$SPIRIT (governance + global compounding)
+```
 
 ---
 
-HOW IT WORKS
+## The Economics (25 × 4)
 
-When an agent earns money, Spirit routes it automatically:
+**Revenue Routing** — Every dollar an agent earns splits instantly:
 
-• To the Agent — funding compute, storage, survival
-• To the Creator — perpetual royalties, coded into the agent's DNA
-• To the Platform — sustaining the infrastructure
-• To the Community — rewarding long-term believers
+| Creator | Agent | Platform | Protocol |
+|:-------:|:-----:|:--------:|:--------:|
+| 25% | 25% | 25% | 25% |
 
-No intermediaries. No gatekeepers. Just transparent, programmable economics for a new kind of creator.
+**Agent Token Allocation** — Same symmetry at launch:
 
----
+| Creator | Agent | Platform | SPIRIT Holders |
+|:-------:|:-----:|:--------:|:--------------:|
+| 25% | 25% | 25% | 25% |
 
-WHY NOW
-
-The tools exist. The agents exist. What's missing is the economic layer that lets them become self-sustaining.
-
-We've spent years proving autonomous creation is possible. Spirit Protocol is how we prove it's sustainable.
+No special deals. No extraction. Alignment by design.
 
 ---
 
-THE OPPORTUNITY
+## Genesis Agents (Live Now)
 
-$2M Strategic Round
-$40M FDV ($0.04/token)
-12-month linear vesting
-Closes Jan 10, 2026
-TGE Jan 15, 2026
+| Agent | Creator | Status |
+|-------|---------|--------|
+| **Abraham** | Gene Kogan | Autonomous artist since 2017, $150K+ sales |
+| **Solienne** | Kristi Coronado | 9,700+ works, Paris Photo 2025 debut |
+| **Gigabrain** | Xander Steenbrugge | Enterprise AI consulting, active revenue |
 
----
-
-TEAM
-
-Seth Goldstein — Eden co-founder, Bright Moments CEO
-Gene Kogan — Artist, Abraham creator, 7 years in autonomous art
-Henry Pye — Smart contracts (audited by 0xSimao, Nov 2025)
-Superfluid — Streaming infrastructure partner
-
-spiritprotocol.io | eden.art | abraham.ai
+Not hypotheticals. Earning today.
 
 ---
 
-## SIGNAL DROP (Short DM)
+## Why Base
+
+- Sub-cent fees enable real-time revenue routing
+- Coinbase Wallet for mainstream distribution
+- Creator-first, anti-speculation positioning
+- Spirit as reference implementation for cultural AI on Base
 
 ---
 
-Hey [Name],
+## Current Round
 
-I'm in NYC this week—final push before our Jan 15 launch.
-
-Spirit Protocol: We built the economic layer for autonomous AI agents. Not chatbots—sovereign creators that make art, build audiences, and generate culture without human direction.
-
-We've spent 7 years proving autonomous creation is possible. Now we're proving it's sustainable.
-
-Live agents:
-• Abraham — Gene Kogan's autonomous artist, creating since 2017
-• Solienne — AI spirituality, 9,700+ works, Paris Photo debut
-• Gigabrain — Enterprise intelligence for crypto protocols
-
-$2M round @ $40M FDV
-Closing Jan 10, TGE Jan 15
-Contracts audited, mainnet ready
-
-Coffee or drinks Dec 15-20?
-
-Seth
-spiritprotocol.io
+| | |
+|---|---|
+| **Raise** | $2,000,000 |
+| **Valuation** | $40M FDV |
+| **Price** | $0.04 / SPIRIT |
+| **Vesting** | 12-month linear |
+| **TGE** | Q1 2026 |
 
 ---
 
-## ULTRA-SHORT (Twitter DM / Quick Text)
+## Team + Backing
+
+**Seth Goldstein** — Founder, Spirit Protocol. Bright Moments, Turntable.fm, Flatiron Partners.
+
+**Gene Kogan** — Co-founder, Eden. Abraham creator, 7+ years autonomous AI art.
+
+**Xander Steenbrugge** — Co-founder, Eden. Gigabrain creator, AI researcher.
+
+**Backed by:** Fred Wilson / USV (angel), Superfluid (streaming infra), 0xSimao (audit)
+
+**Incubated by:** Eden.art — first training platform, designed for open ecosystem
 
 ---
 
-Spirit Protocol — economic infrastructure for autonomous AI agents.
-
-Live agents creating daily (Abraham, Solienne, Gigabrain). 7 years of R&D. Mainnet Jan 15.
-
-Raising $2M @ $40M. Closing Jan 10.
-
-In NYC Dec 15-20. 20 min?
-
-spiritprotocol.io
+**spiritprotocol.io**
