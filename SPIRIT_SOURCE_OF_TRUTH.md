@@ -1,6 +1,6 @@
 # SPIRIT PROTOCOL — SOURCE OF TRUTH
 
-**Last Updated:** January 8, 2026 @ 12:30pm PST
+**Last Updated:** January 8, 2026 @ 4:00pm PST
 **Updated By:** Seth (via Claude Code)
 **Status:** LOCKED unless noted
 **Last Review:** Pierre call (Jan 8, 2026)
@@ -324,24 +324,78 @@ SPIRIT_SOURCE_OF_TRUTH.md ← YOU ARE HERE (canonical facts)
 
 ---
 
-## 13. OPEN ITEMS
+## 13. ERC-8004 INTEGRATION (DRAFT)
+
+**Status:** DRAFT — Needs team review
+**Standard:** ERC-8004 Trustless Agents (Draft v1, Oct 2025)
+**Reference:** `ERC8004_INTEGRATION_SPEC.md`
+
+### Decision: Spirit EXTENDS ERC-8004
+
+Spirit implements the ERC-8004 Identity Registry interface and adds economic extensions:
+
+```
+ERC-8004 Layer: Identity + Reputation + Validation
+Spirit Layer:   Treasury + Revenue Router + Token Factory
+```
+
+### Why Extend (Not Replace)
+
+1. **Network effects** — ERC-8004 has MetaMask, Coinbase, EF, Google backing
+2. **Separation of concerns** — Identity ≠ Economics
+3. **Composability** — Any ERC-8004 agent can add Spirit economics
+4. **x402 alignment** — Both ERC-8004 and Spirit use x402 for payments
+
+### Spirit Extensions to ERC-8004
+
+| ERC-8004 Concept | Spirit Addition |
+|------------------|-----------------|
+| `agentId` (NFT) | Same ID, extended metadata |
+| `agentWallet` | `treasury` (Safe multisig) |
+| `owner` | `artist` (creator) |
+| Metadata | Spirit-specific keys (`spirit:treasury`, etc.) |
+| — | `childToken` (agent token) |
+| — | `stakingPool` (GDA pool) |
+| — | `lpPosition` (Uniswap V4 LP) |
+| — | Revenue routing (25/25/25/25) |
+
+### Implementation Phases
+
+| Phase | Scope | Timeline |
+|-------|-------|----------|
+| 1 | Core integration (Identity Registry interface) | TGE |
+| 2 | Reputation Registry integration | Q2 2026 |
+| 3 | Validation Registry integration | Q3 2026 |
+| 4 | Cross-registry support (external agents) | Q4 2026 |
+
+### Open Questions
+
+- Deploy own ERC-8004 registries or use canonical?
+- Minimum viable for TGE vs full integration?
+- How do existing Spirit agents migrate?
+
+---
+
+## 14. OPEN ITEMS
 
 | Item | Status | Owner | ETA |
 |------|--------|-------|-----|
 | Token split implementation | ✅ DONE | Pierre | Jan 1, 2026 |
 | sqrtPriceX96 calculation formula | ✅ DONE | Pierre | Jan 8, 2026 |
-| Backend: Spirit holder snapshot service | TODO | Spirit | Before launch |
-| Backend: Merkle root generation | TODO | Spirit | Before launch |
-| Backend: Price calculation service | TODO | Spirit | Before launch |
-| x402 integration for API monetization | TODO | Spirit | Before launch |
-| Website: Fix 25/25/25/25 → 25/20/25/25/5 | TODO | Seth | This week |
+| Backend: Spirit holder snapshot service | ✅ DONE | Spirit | Jan 8, 2026 |
+| Backend: Merkle root generation | ✅ DONE | Spirit | Jan 8, 2026 |
+| Backend: Price calculation service | ✅ DONE | Spirit | Jan 8, 2026 |
+| x402 middleware for API monetization | ✅ DONE | Spirit | Jan 8, 2026 |
+| ERC-8004 integration spec | ✅ DONE | Spirit | Jan 8, 2026 |
+| ERC-8004 contract implementation | TODO | Pierre + Spirit | Before TGE |
+| Website: Fix 25/25/25/25 framing | TODO | Seth | This week |
 | First 10 children planning | TODO | Eden + Spirit | Before launch |
 | SDK npm publish | BLOCKED | Pierre | After contracts stable |
 | Whitepaper PDF update | TODO | Seth | After architecture locked |
 
 ---
 
-## 14. KEY CONTACTS
+## 15. KEY CONTACTS
 
 | Role | Name | Contact |
 |------|------|---------|
@@ -354,7 +408,7 @@ SPIRIT_SOURCE_OF_TRUTH.md ← YOU ARE HERE (canonical facts)
 
 ---
 
-## 15. ROADMAP (From IMPROVEMENT_PLAN)
+## 16. ROADMAP (From IMPROVEMENT_PLAN)
 
 | Phase | Dates | Goal |
 |-------|-------|------|
@@ -369,7 +423,7 @@ SPIRIT_SOURCE_OF_TRUTH.md ← YOU ARE HERE (canonical facts)
 
 ---
 
-## 16. CLAUDE CODE SESSION PROMPTS
+## 17. CLAUDE CODE SESSION PROMPTS
 
 ### Session 1: spirit-contracts-core
 ```
@@ -394,7 +448,7 @@ Emphasize governance participation, not yield.
 
 ---
 
-## 17. VERSION HISTORY
+## 18. VERSION HISTORY
 
 | Date | Time | Change | Source |
 |------|------|--------|--------|
@@ -402,6 +456,7 @@ Emphasize governance participation, not yield.
 | Dec 19, 2025 | 5:00pm | Post-Coinbase call updates | Claude.ai |
 | Dec 19, 2025 | 8:00pm | Integrated securities audit + improvement plan | Claude.ai |
 | Jan 8, 2026 | 12:30pm | Pierre call: Backend architecture, x402, merkle strategy | Claude Code |
+| Jan 8, 2026 | 4:00pm | Backend services implemented, ERC-8004 integration spec | Claude Code |
 
 ---
 
