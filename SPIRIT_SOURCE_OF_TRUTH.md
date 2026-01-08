@@ -1,9 +1,9 @@
 # SPIRIT PROTOCOL — SOURCE OF TRUTH
 
-**Last Updated:** December 19, 2025 @ 8:00pm PST
-**Updated By:** Seth (via Claude.ai)
+**Last Updated:** January 8, 2026 @ 12:30pm PST
+**Updated By:** Seth (via Claude Code)
 **Status:** LOCKED unless noted
-**Next Review:** After Shan (Coinbase) feedback
+**Last Review:** Pierre call (Jan 8, 2026)
 
 ---
 
@@ -11,13 +11,15 @@
 
 **One sentence:** Spirit is how cultural AI agents persist — economically.
 
-**Token split (Agent):** 25% Creator / 25% Agent / 25% Platform / 25% SPIRIT Holders
+**Token split (Agent):** 25/25/25/25 — Agent's 25% includes 5% LP (owned by agent wallet)
 
 **Revenue split:** 25% Creator / 25% Agent / 25% Platform / 25% Protocol (hardcoded)
 
-**TGE:** Q1 2026 (public) / January 15, 2026 (internal)
+**TGE:** Q1 2026 (public) — Jan 15 NOT a real deadline
 
 **Genesis Agents:** Abraham, Solienne, Gigabrain (NO Geppetto)
+
+**Architecture:** Backend-controlled self-service (not permissionless contracts)
 
 ---
 
@@ -40,7 +42,17 @@
 | Total Supply | 1,000,000,000 | LOCKED |
 | Network | Base (Coinbase L2) | LOCKED |
 | TGE (Public) | Q1 2026 | USE THIS |
-| TGE (Internal) | January 15, 2026 | INTERNAL ONLY |
+| TGE (Internal) | When ready | Quality > Speed |
+
+### Spirit Token — NO CTA (Securities Critical)
+
+**Pierre quote (Jan 8):** "There is no action for Spirit. Spirit, you just hold it and farm child tokens. Staking is for child tokens."
+
+**Why this matters:**
+- Spirit doesn't generate revenue/dividends
+- Spirit just entitles you to more tokens (airstreams)
+- This is materially different from a security
+- Staking rewards come from AGENT tokens, not SPIRIT
 
 ### Allocation
 
@@ -56,16 +68,84 @@
 
 ## 3. AGENT TOKEN DISTRIBUTION (LOCKED)
 
-**Confirmed:** Pierre (Superfluid), December 19, 2025
+**Confirmed:** Pierre (Superfluid), January 1, 2026
+**Commit:** https://github.com/0xPilou/spirit-contracts/commit/14be3752
 
 | Recipient | % | Amount | Notes |
 |-----------|---|--------|-------|
 | Creator/Artist | 25% | 250M | Auto-staked 52 weeks |
-| Agent | 25% | 250M | 20% staked + 5% seeds liquidity |
-| Platform | 25% | 250M | Eden first 10, opens later |
+| Agent | 25%* | 250M | *20% staked + 5% LP (owned by agent wallet) |
+| Platform | 25% | 250M | Configurable per-agent (Eden first, opens later) |
 | SPIRIT Holders | 25% | 250M | Airstreamed 52 weeks via merkleRoot |
 
-**Public framing:** "25% × 4" — LP is implementation detail within Agent's 25%
+**Key change (Jan 1):** Agent now owns LP position (can add/remove/collect fees)
+**Public framing:** "25 × 4" — Agent's 25% includes 5% LP as asterisk detail
+
+---
+
+## 3A. SELF-SERVICE ARCHITECTURE (LOCKED)
+
+**Confirmed:** Pierre (Superfluid), January 8, 2026
+
+### Key Decision: Backend Creates Children
+
+Pierre's recommendation: Keep `createChild()` admin-protected. Backend handles everything.
+
+**Why:**
+- Can't verify merkle root is correct onchain
+- Can't verify sqrtPriceX96 is correct onchain
+- Permissionless contracts = potential vulnerability
+- Backend can validate everything before calling contract
+
+### Architecture Flow
+
+```
+Agent requests creation via x402 API
+        ↓
+Backend validates request
+        ↓
+Backend takes Spirit holder snapshot
+        ↓
+Backend generates merkle root
+        ↓
+Backend calculates sqrtPriceX96 (based on Spirit FDV)
+        ↓
+Backend calls createChild (pays gas)
+        ↓
+Agent token created
+```
+
+### Merkle Root Strategy
+
+- **Snapshot-based** at time of agent creation
+- Backend takes snapshot of Spirit holders
+- If you hold Spirit at snapshot → you get child token airstream
+- If you sell Spirit after snapshot → you still get that child's airstream
+- If you sell before next agent → you miss next agent's airstream
+
+**Incentive:** Hold Spirit to be eligible for ALL future agent launches
+
+### Pool Initialization
+
+- Price ratio based on Spirit FDV
+- Example: Spirit = 40K FDV, Child = 40K FDV → 1:1 ratio
+- Backend service calculates sqrtPriceX96 from Spirit USD price
+- Waiting on Pierre for exact formula
+
+### Monetization: x402 Protocol
+
+- Agents pay for backend API via x402 streaming (https://x402.superfluid.org/)
+- No need for `register()` wrapper in contract
+- Keeps contracts tight and secure
+- Zero gas for callers (EIP-712 signatures)
+
+### Rollout Strategy
+
+| Phase | Scope | Status |
+|-------|-------|--------|
+| 1 | First 10 children — manually approved, Eden = platform | CURRENT |
+| 2 | Progressively permissionless via backend rules | FUTURE |
+| 3 | Predetermined on-chain graduation criteria | LONG-TERM |
 
 ---
 
@@ -248,13 +328,16 @@ SPIRIT_SOURCE_OF_TRUTH.md ← YOU ARE HERE (canonical facts)
 
 | Item | Status | Owner | ETA |
 |------|--------|-------|-----|
-| Website securities fixes (11 items) | IN PROGRESS | Seth | Dec 19-20 |
-| Contract modifications (token split) | IN PROGRESS | Pierre | Before TGE |
-| ETH Sepolia deployment | PENDING | Pierre | This week |
-| Merkle snapshot script | PENDING | Internal | Before agent launch |
-| Aaron Wright legal memo | PENDING | Seth | Before Coinbase review |
-| Whitepaper PDF update | BLOCKED | Seth | After securities fixes |
-| Coinbase data room | BLOCKED | Seth | After whitepaper |
+| Token split implementation | ✅ DONE | Pierre | Jan 1, 2026 |
+| sqrtPriceX96 calculation formula | ✅ DONE | Pierre | Jan 8, 2026 |
+| Backend: Spirit holder snapshot service | TODO | Spirit | Before launch |
+| Backend: Merkle root generation | TODO | Spirit | Before launch |
+| Backend: Price calculation service | TODO | Spirit | Before launch |
+| x402 integration for API monetization | TODO | Spirit | Before launch |
+| Website: Fix 25/25/25/25 → 25/20/25/25/5 | TODO | Seth | This week |
+| First 10 children planning | TODO | Eden + Spirit | Before launch |
+| SDK npm publish | BLOCKED | Pierre | After contracts stable |
+| Whitepaper PDF update | TODO | Seth | After architecture locked |
 
 ---
 
@@ -318,6 +401,7 @@ Emphasize governance participation, not yield.
 | Dec 19, 2025 | 3:30pm | Initial creation | Claude.ai |
 | Dec 19, 2025 | 5:00pm | Post-Coinbase call updates | Claude.ai |
 | Dec 19, 2025 | 8:00pm | Integrated securities audit + improvement plan | Claude.ai |
+| Jan 8, 2026 | 12:30pm | Pierre call: Backend architecture, x402, merkle strategy | Claude Code |
 
 ---
 
