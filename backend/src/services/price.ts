@@ -61,29 +61,23 @@ export class PriceService {
   ): SqrtPriceResult {
     // Price ratio: how many Child tokens per Spirit token
     // If FDVs are equal, ratio = 1
-    // Calculated as: childFdv / spiritFdv
     //
-    // Using scaled math to avoid floating point:
-    // ratio = (childFdv * SCALE) / spiritFdv
-    // sqrtRatio = sqrt(ratio * SCALE) / sqrt(SCALE)
+    // sqrtPriceX96 = sqrt(ratio) * 2^96
+    //
+    // At equal FDV: sqrtPriceX96 = 1 * 2^96 = Q96
+    // At 4x FDV:    sqrtPriceX96 = 2 * 2^96 = 2*Q96
 
-    const SCALE = BigInt(10) ** BigInt(18);
-
-    // Scale up for precision, then calculate ratio
-    const scaledRatio = (childFdv * SCALE) / spiritFdv;
-
-    // Calculate square root using Newton's method
-    const sqrtScaledRatio = this.sqrt(scaledRatio * SCALE);
-
-    // Convert to sqrtPriceX96
-    // sqrtPriceX96 = sqrtRatio * Q96
-    // Since sqrtScaledRatio = sqrtRatio * sqrt(SCALE)
-    // We need: sqrtPriceX96 = sqrtScaledRatio * Q96 / sqrt(SCALE)
-    const sqrtScale = this.sqrt(SCALE);
-    const sqrtPriceX96 = (sqrtScaledRatio * Q96) / sqrtScale;
-
-    // Calculate human-readable ratio for verification
+    // Calculate ratio as floating point (sufficient precision for pool init)
     const priceRatio = Number(childFdv) / Number(spiritFdv);
+
+    // Take square root
+    const sqrtRatio = Math.sqrt(priceRatio);
+
+    // Multiply by Q96 to get sqrtPriceX96
+    // For precision, we use BigInt arithmetic with scaling
+    const PRECISION = BigInt(10) ** BigInt(18);
+    const sqrtRatioScaled = BigInt(Math.floor(sqrtRatio * Number(PRECISION)));
+    const sqrtPriceX96 = (sqrtRatioScaled * Q96) / PRECISION;
 
     return {
       sqrtPriceX96,

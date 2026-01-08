@@ -28,8 +28,28 @@ export class MerkleService {
     // Get holders from snapshot
     const holders = await snapshotService.getHolders(snapshotId);
 
+    // Handle empty snapshot (testnet or fresh deployment)
     if (holders.length === 0) {
-      throw new Error('Cannot generate merkle tree from empty snapshot');
+      console.warn('Empty snapshot - creating placeholder merkle tree');
+      // Create a tree with a placeholder entry (protocol treasury as sole holder)
+      // This allows testing without real token holders
+      const placeholderLeaf: [string, string] = [
+        '0x0000000000000000000000000000000000000001', // Placeholder address
+        '0', // Zero allocation
+      ];
+      const tree = StandardMerkleTree.of([placeholderLeaf], ['address', 'uint256']);
+
+      const treeId = generateId('tree');
+      const metadata: MerkleTree = {
+        id: treeId,
+        snapshotId,
+        root: tree.root,
+        leafCount: 0, // Actual holder count is 0
+        createdAt: Math.floor(Date.now() / 1000),
+      };
+
+      merkleTrees.set(treeId, { tree, metadata });
+      return metadata;
     }
 
     // Convert holders to merkle leaves

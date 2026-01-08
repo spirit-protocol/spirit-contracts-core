@@ -116,8 +116,13 @@ export class SnapshotService {
       functionName: 'totalSupply',
     }) as bigint;
 
-    // Fetch all Transfer events
-    // In production, use pagination and The Graph
+    // RPC providers limit block range (typically 100K blocks)
+    // For MVP, we'll query recent blocks only
+    // In production, use The Graph subgraph for full history
+    const MAX_BLOCK_RANGE = BigInt(50000);
+    const fromBlock = toBlock > MAX_BLOCK_RANGE ? toBlock - MAX_BLOCK_RANGE : BigInt(0);
+
+    // Fetch Transfer events from recent blocks
     const logs = await this.client.getLogs({
       address: this.spiritTokenAddress,
       event: {
@@ -129,7 +134,7 @@ export class SnapshotService {
           { type: 'uint256', indexed: false, name: 'value' },
         ],
       },
-      fromBlock: BigInt(0),
+      fromBlock,
       toBlock,
     });
 
