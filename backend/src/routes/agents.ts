@@ -5,10 +5,12 @@
  */
 
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import type { Address } from 'viem';
 import { snapshotService } from '../services/snapshot.js';
 import { merkleService } from '../services/merkle.js';
 import { priceService } from '../services/price.js';
 import { validationService } from '../services/validation.js';
+import { contractService } from '../services/contract.js';
 import { x402Middleware } from '../middleware/x402.js';
 import { config } from '../config.js';
 import type { CreateAgentRequest, CreateAgentResponse, ApiResponse } from '../types/index.js';
@@ -71,31 +73,43 @@ export async function agentRoutes(fastify: FastifyInstance) {
         const priceData = await priceService.getSpiritPrice();
         const priceResult = priceService.calculateSqrtPrice(priceData.spiritFdv);
 
-        // Step 4: Call contract (in production)
-        // For now, simulate the contract call
+        // Step 4: Call contract
         console.log(`Creating agent ${body.symbol}: Submitting to contract...`);
-        const mockTxHash = `0x${Buffer.from(Math.random().toString()).toString('hex').slice(0, 64)}`;
-        const mockChildToken = `0x${Buffer.from(body.symbol).toString('hex').padEnd(40, '0')}`;
-        const mockStakingPool = `0x${Buffer.from(body.symbol + '_pool').toString('hex').padEnd(40, '0')}`;
 
-        // TODO: Actual contract call
-        // const tx = await spiritFactory.createChild(
-        //   body.name,
-        //   body.symbol,
-        //   body.artist,
-        //   body.agent,
-        //   body.platform,
-        //   tree.root,
-        //   priceResult.sqrtPriceX96
-        // );
+        let childToken: string;
+        let stakingPool: string;
+        let transactionHash: string;
+
+        // Check if contract service is initialized
+        if (contractService.isReady()) {
+          // Real contract call
+          const result = await contractService.createChild({
+            name: body.name,
+            symbol: body.symbol,
+            artist: body.artist as Address,
+            agent: body.agent as Address,
+            merkleRoot: tree.root as `0x${string}`,
+            sqrtPriceX96: priceResult.sqrtPriceX96,
+          });
+
+          childToken = result.childToken;
+          stakingPool = result.stakingPool;
+          transactionHash = result.transactionHash;
+        } else {
+          // Mock mode for development without admin key
+          console.warn('Contract service not ready - using mock data');
+          transactionHash = `0x${Buffer.from(Math.random().toString()).toString('hex').slice(0, 64)}`;
+          childToken = `0x${Buffer.from(body.symbol).toString('hex').padEnd(40, '0')}`;
+          stakingPool = `0x${Buffer.from(body.symbol + '_pool').toString('hex').padEnd(40, '0')}`;
+        }
 
         const response: CreateAgentResponse = {
           success: true,
-          childToken: mockChildToken,
-          stakingPool: mockStakingPool,
+          childToken,
+          stakingPool,
           merkleRoot: tree.root,
           merkleTreeIpfs: tree.ipfsHash || 'pending',
-          transactionHash: mockTxHash,
+          transactionHash,
           snapshotId: snapshot.id,
           blockNumber: snapshot.blockNumber,
         };

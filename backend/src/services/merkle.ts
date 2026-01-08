@@ -8,7 +8,9 @@
 import { StandardMerkleTree } from '@openzeppelin/merkle-tree';
 import { keccak256, encodePacked } from 'viem';
 import { snapshotService } from './snapshot.js';
+import { ipfsService } from './ipfs.js';
 import { generateId } from '../utils/id.js';
+import { config } from '../config.js';
 import type { MerkleTree, MerkleProof, Holder, MerkleLeaf } from '../types/index.js';
 
 // In-memory storage for development (use PostgreSQL + IPFS in production)
@@ -74,6 +76,28 @@ export class MerkleService {
 
     // Store tree
     merkleTrees.set(treeId, { tree, metadata });
+
+    // Upload to IPFS if configured
+    if (ipfsService.isConfigured()) {
+      try {
+        const treeJson = JSON.stringify(tree.dump());
+        const ipfsResult = await ipfsService.uploadMerkleTree(
+          treeId,
+          treeJson,
+          {
+            snapshotId,
+            root: tree.root,
+            leafCount: holders.length,
+            chainId: config.blockchain.chainId,
+          }
+        );
+        metadata.ipfsHash = ipfsResult.hash;
+        console.log(`Merkle tree uploaded to IPFS: ${ipfsResult.url}`);
+      } catch (error) {
+        console.error('Failed to upload merkle tree to IPFS:', error);
+        // Continue without IPFS - tree is still stored locally
+      }
+    }
 
     return metadata;
   }
@@ -180,7 +204,7 @@ export class MerkleService {
    */
   async importTree(json: string, metadata: MerkleTree): Promise<void> {
     const dump = JSON.parse(json);
-    const tree = StandardMerkleTree.load(dump);
+    const tree = StandardMerkleTree.load(dump) as StandardMerkleTree<[string, string]>;
 
     merkleTrees.set(metadata.id, { tree, metadata });
   }

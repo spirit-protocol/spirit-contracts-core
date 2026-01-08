@@ -22,6 +22,7 @@ import { agentRoutes } from './routes/agents.js';
 import { merkleRoutes } from './routes/merkle.js';
 import { snapshotRoutes } from './routes/snapshots.js';
 import { priceRoutes } from './routes/price.js';
+import { contractService } from './services/contract.js';
 
 // Validate configuration before starting
 validateConfig();
@@ -95,6 +96,10 @@ fastify.setErrorHandler((error, request, reply) => {
 // Start server
 async function start() {
   try {
+    // Initialize contract service (will warn if no admin key)
+    await contractService.initialize();
+    const contractMode = contractService.isReady() ? 'Live' : 'Mock (no admin key)';
+
     await fastify.listen({
       port: config.port,
       host: config.host,
@@ -118,6 +123,7 @@ async function start() {
 ║                                                          ║
 ║   Environment: ${config.environment.padEnd(39)}║
 ║   Chain: Base Sepolia (${config.blockchain.chainId})                         ║
+║   Contracts: ${contractMode.padEnd(43)}║
 ║   x402 Payments: ${config.x402.enabled ? 'Enabled ' : 'Disabled'}                              ║
 ║                                                          ║
 ╚══════════════════════════════════════════════════════════╝

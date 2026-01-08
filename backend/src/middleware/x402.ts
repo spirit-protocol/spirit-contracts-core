@@ -20,10 +20,16 @@ import { baseSepolia } from 'viem/chains';
 import { config } from '../config.js';
 import type { X402PaymentProof } from '../types/index.js';
 
-// Superfluid CFA ABI for flow queries
+// Superfluid CFA (Constant Flow Agreement) ABI for flow queries
+// This is the canonical way to query active streams in Superfluid
 const CFA_ABI = parseAbi([
-  'function getFlow(address token, address sender, address receiver) view returns (uint256 timestamp, int96 flowRate, uint256 deposit, uint256 owedDeposit)',
+  'function getFlow(address token, address sender, address receiver) external view returns (uint256 timestamp, int96 flowRate, uint256 deposit, uint256 owedDeposit)',
+  'function getNetFlow(address token, address account) external view returns (int96 flowRate)',
 ]);
+
+// CFA Forwarder on Base Sepolia
+// See: https://docs.superfluid.finance/docs/protocol/contract-addresses
+const CFA_FORWARDER_ADDRESS = '0xcfA132E353cB4E398080B9700609bb008eceB125' as const;
 
 // Header name for x402 payment proof
 const X402_HEADER = 'x-402-payment';
@@ -102,36 +108,62 @@ export function x402Middleware(
 }
 
 /**
- * Verify a Superfluid payment stream.
+ * Verify a Superfluid payment stream onchain.
+ *
+ * Flow:
+ * 1. Query CFA Forwarder for active flow from sender to recipient
+ * 2. Verify flow rate meets minimum requirement
+ * 3. Verify flow is currently active (timestamp > 0)
  */
 async function verifyPayment(proof: X402PaymentProof): Promise<boolean> {
   try {
+    // Basic parameter validation
+    if (!proof.sender || !proof.flowRate) {
+      console.log('x402: Missing sender or flowRate in proof');
+      return false;
+    }
+
+    // Check flow rate meets minimum
+    const claimedFlowRate = BigInt(proof.flowRate);
+    if (claimedFlowRate < config.x402.minimumFlowRate) {
+      console.log(`x402: Flow rate ${claimedFlowRate} below minimum ${config.x402.minimumFlowRate}`);
+      return false;
+    }
+
+    // Verify onchain
     const client = createPublicClient({
       chain: baseSepolia,
       transport: http(config.blockchain.rpcUrl),
     });
 
-    // Query the Superfluid CFA contract for the flow
-    // TODO: Use actual Superfluid SDK for proper verification
-    // This is a simplified implementation
+    const acceptedToken = config.x402.acceptedToken as `0x${string}`;
+    const recipient = config.x402.recipientAddress as `0x${string}`;
+    const sender = proof.sender as `0x${string}`;
 
-    // For now, verify signature and basic parameters
-    if (!proof.sender || !proof.flowRate || !proof.streamId) {
+    // Query the actual flow from Superfluid CFA Forwarder
+    const [timestamp, flowRate] = await client.readContract({
+      address: CFA_FORWARDER_ADDRESS,
+      abi: CFA_ABI,
+      functionName: 'getFlow',
+      args: [acceptedToken, sender, recipient],
+    }) as [bigint, bigint, bigint, bigint];
+
+    // Check if stream is active (timestamp > 0 means stream exists)
+    if (timestamp === BigInt(0)) {
+      console.log(`x402: No active stream from ${sender} to ${recipient}`);
       return false;
     }
 
-    // Check flow rate meets minimum
-    const flowRate = BigInt(proof.flowRate);
+    // Check actual flow rate meets minimum
     if (flowRate < config.x402.minimumFlowRate) {
+      console.log(`x402: Actual flow rate ${flowRate} below minimum ${config.x402.minimumFlowRate}`);
       return false;
     }
 
-    // TODO: Verify stream is actually active onchain
-    // TODO: Verify signature matches sender
-
+    console.log(`x402: Verified stream from ${sender} with rate ${flowRate}`);
     return true;
   } catch (error) {
-    console.error('Payment verification error:', error);
+    console.error('x402 verification error:', error);
     return false;
   }
 }
