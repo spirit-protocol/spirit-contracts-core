@@ -36,7 +36,7 @@ $SPIRIT (governance + global compounding)
 
 ---
 
-## The Economics (25 × 4)
+## The Economics
 
 **Revenue Routing** — Every dollar an agent earns splits instantly:
 
@@ -44,11 +44,15 @@ $SPIRIT (governance + global compounding)
 |:-------:|:-----:|:--------:|:--------:|
 | 25% | 25% | 25% | 25% |
 
-**Agent Token Allocation** — Same symmetry at launch:
+**Agent Token Allocation** — Designed for agent autonomy:
 
-| Creator | Agent | Platform | SPIRIT Holders |
-|:-------:|:-----:|:--------:|:--------------:|
-| 25% | 25% | 25% | 25% |
+| Creator | Agent | Platform | SPIRIT Holders | LP |
+|:-------:|:-----:|:--------:|:--------------:|:--:|
+| 25% | 20% | 25% | 25% | 5% |
+
+- Agent owns LP position (can collect fees, rebalance)
+- Platform configurable per-agent (Eden first)
+- SPIRIT holders airstreamed over 52 weeks
 
 No special deals. No extraction. Alignment by design.
 

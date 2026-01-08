@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spirit Protocol — Pierre Sync</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            border-bottom: 1px solid #222;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 300;
+            color: #6B8FFF;
+            margin-bottom: 30px;
+        }
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin: 20px 0 10px;
+            color: #888;
+        }
+        p, li {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+        ul { padding-left: 24px; }
+        li { margin-bottom: 8px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        th {
+            color: #6B8FFF;
+            font-weight: 500;
+        }
+        code {
+            background: #1a1a1a;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.95rem;
+        }
+        pre {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .highlight {
+            background: #1a2a1a;
+            border-left: 3px solid #4a9;
+            padding: 16px 20px;
+            margin: 20px 0;
+        }
+        .warning {
+            background: #2a1a1a;
+            border-left: 3px solid #a66;
+            padding: 16px 20px;
+            margin: 20px 0;
+        }
+        .question {
+            background: #1a1a2a;
+            border-left: 3px solid #6B8FFF;
+            padding: 16px 20px;
+            margin: 20px 0;
+        }
+        .checkmark { color: #4a9; }
+        .nav {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .nav a {
+            background: #222;
+            color: #fff;
+            padding: 10px 16px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        .nav a:hover { background: #333; }
+        .slide-num {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: #444;
+            font-size: 0.9rem;
+        }
+        .accent { color: #6B8FFF; }
+    </style>
+</head>
+<body>
+
+<div class="slide" id="s1">
+    <span class="slide-num">1/16</span>
+    <h1>Spirit Protocol — Pierre Sync</h1>
+    <h2>January 8, 2026</h2>
+    <div class="highlight">
+        <p><strong>Goal: Get self-service right, not fast.</strong></p>
+        <p>Jan 15 is off the table. Let's design the architecture properly.</p>
+    </div>
+</div>
+
+<div class="slide" id="s2">
+    <span class="slide-num">2/16</span>
+    <h1>What You Shipped (Jan 1) <span class="checkmark">✓</span></h1>
+    <ul>
+        <li><span class="checkmark">✓</span> Platform address = parameter (not hardcoded)</li>
+        <li><span class="checkmark">✓</span> New split: 25/20/25/25/5</li>
+        <li><span class="checkmark">✓</span> Agent owns LP position</li>
+    </ul>
+    <p style="margin-top: 30px; color: #666;">Commit: <code>14be3752</code></p>
+    <p style="color: #888;">This is the foundation. Thank you.</p>
+</div>
+
+<div class="slide" id="s3">
+    <span class="slide-num">3/16</span>
+    <h1>Current Token Split</h1>
+    <table>
+        <tr><th>Recipient</th><th>%</th><th>Mechanism</th></tr>
+        <tr><td>Artist</td><td>25%</td><td>Auto-staked 52w</td></tr>
+        <tr><td>Agent</td><td>20%</td><td>Auto-staked 52w</td></tr>
+        <tr><td>Platform</td><td>25%</td><td>Direct transfer</td></tr>
+        <tr><td>Airstream</td><td>25%</td><td>Merkle drop to SPIRIT holders</td></tr>
+        <tr><td>LP</td><td>5%</td><td>Uniswap → Agent wallet</td></tr>
+    </table>
+    <div class="question">
+        <p><strong>Q: Is this correct? Is "Airstream" same as "Protocol"?</strong></p>
+    </div>
+</div>
+
+<div class="slide" id="s4">
+    <span class="slide-num">4/16</span>
+    <h1>Website vs Reality</h1>
+    <table>
+        <tr><th>Website Says</th><th>Reality</th></tr>
+        <tr><td>25/25/25/25 split</td><td>Now 25/20/25/25/5</td></tr>
+        <tr><td>"Hardcoded, immutable"</td><td>Just changed</td></tr>
+        <tr><td>SDK available</td><td>Not on npm</td></tr>
+        <tr><td>Register an agent</td><td>Admin-gated</td></tr>
+        <tr><td>Revenue routing</td><td>Testnet only</td></tr>
+    </table>
+    <div class="warning">
+        <p><strong>Gap:</strong> Website is ahead of implementation.</p>
+    </div>
+</div>
+
+<div class="slide" id="s5">
+    <span class="slide-num">5/16</span>
+    <h1>The Self-Service Vision</h1>
+    <pre>await spirit.register({
+  name: "MyAgent",
+  symbol: "MYAG",
+  artist: "0x...",
+  platform: "0xEden...",
+  initialPrice: 0.0001
+});</pre>
+    <div class="highlight">
+        <p><strong>No admin. Pay fee. Done.</strong></p>
+    </div>
+</div>
+
+<div class="slide" id="s6">
+    <span class="slide-num">6/16</span>
+    <h1>What's Blocking Self-Service</h1>
+    <table>
+        <tr><th>Blocker</th><th>Current State</th></tr>
+        <tr><td>Access control</td><td><code>createChild()</code> requires admin role</td></tr>
+        <tr><td>Merkle root</td><td>Who generates it? When?</td></tr>
+        <tr><td>Pool init</td><td>Who supplies sqrtPriceX96?</td></tr>
+        <tr><td>Platform validation</td><td>Whitelist? Signature? Open?</td></tr>
+    </table>
+</div>
+
+<div class="slide" id="s7">
+    <span class="slide-num">7/16</span>
+    <h1>Merkle Root — The Real Choke Point</h1>
+    <h3>Three Options:</h3>
+    <table>
+        <tr><th>Option</th><th>Pros</th><th>Cons</th></tr>
+        <tr><td><strong>A: Registrant supplies</strong></td><td>Fully permissionless</td><td>Needs tooling + snapshot rule</td></tr>
+        <tr><td><strong>B: Admin posts later</strong></td><td>Simple</td><td>Delays airstream, centralized</td></tr>
+        <tr><td><strong>C: Switch to stakers</strong></td><td>No merkle needed</td><td>Product change</td></tr>
+    </table>
+    <div class="question">
+        <p><strong>Which do you recommend?</strong></p>
+    </div>
+</div>
+
+<div class="slide" id="s8">
+    <span class="slide-num">8/16</span>
+    <h1>Proposed Gating for Self-Service</h1>
+    <pre>register() wrapper around createChild()
+
+Checks:
+├── Fee paid (ETH or SPIRIT → Treasury)
+├── Platform whitelisted OR signed
+├── Optional: Artist signature
+└── Parameter sanity (name length, nonzero addresses)
+
+Admin role only for:
+├── Platform whitelist management
+└── Emergency pause</pre>
+</div>
+
+<div class="slide" id="s9">
+    <span class="slide-num">9/16</span>
+    <h1>Contract Architecture</h1>
+    <pre>┌─────────────────────────────────────┐
+│         SpiritFactory               │
+│  ┌─────────────────────────────┐    │
+│  │ register() ← permissionless │    │
+│  │     ↓                       │    │
+│  │ _createChild() ← internal   │    │
+│  └─────────────────────────────┘    │
+└─────────────────────────────────────┘
+            ↓
+┌─────────────────────────────────────┐
+│  Per-Agent Infrastructure           │
+│  ├── ChildToken (1B supply)         │
+│  ├── StakingPool (GDA)              │
+│  ├── Uniswap V4 Pool                │
+│  └── Airstream (merkle)             │
+└─────────────────────────────────────┘</pre>
+</div>
+
+<div class="slide" id="s10">
+    <span class="slide-num">10/16</span>
+    <h1>Questions for You</h1>
+    <ol>
+        <li><strong>Merkle strategy</strong> — A, B, or C?</li>
+        <li><strong>Gating mechanism</strong> — Fee + whitelist enough?</li>
+        <li><strong>LP funding</strong> — Who provides ETH side?</li>
+        <li><strong>Timeline</strong> — What's realistic for self-service done right?</li>
+        <li><strong>Sequencing</strong> — What ships first?</li>
+    </ol>
+</div>
+
+<div class="slide" id="s11">
+    <span class="slide-num">11/16</span>
+    <h1>Proposed Sequencing</h1>
+    <table>
+        <tr><th>Phase</th><th>Scope</th><th>Estimate</th></tr>
+        <tr><td>1</td><td>Platform + LP changes</td><td><span class="checkmark">✓ Done?</span></td></tr>
+        <tr><td>2</td><td>Register wrapper + fee gate</td><td>? weeks</td></tr>
+        <tr><td>3</td><td>Merkle tooling / airstream</td><td>? weeks</td></tr>
+        <tr><td>4</td><td>SDK + npm publish</td><td>? weeks</td></tr>
+        <tr><td>5</td><td>Mainnet deploy</td><td>?</td></tr>
+    </table>
+    <div class="question">
+        <p><strong>What's your estimate?</strong></p>
+    </div>
+</div>
+
+<div class="slide" id="s12">
+    <span class="slide-num">12/16</span>
+    <h1>Standards to Explore</h1>
+    <h3>x402 — Coinbase HTTP Payment Protocol</h3>
+    <p>Agents pay for services via HTTP 402. Spirit Treasury as funding source.</p>
+    <h3>ERC-8004 — Onchain Agent State Storage</h3>
+    <p>Standardized agent identity. Fits with Spirit Registry.</p>
+    <div class="question">
+        <p><strong>Worth integrating?</strong></p>
+    </div>
+</div>
+
+<div class="slide" id="s13">
+    <span class="slide-num">13/16</span>
+    <h1>Wallet Addresses (Henry Handover)</h1>
+    <table>
+        <tr><th>ENS</th><th>Address</th></tr>
+        <tr><td>deployer.spiritprotocol.eth</td><td><code>0xe4951bEE...</code></td></tr>
+        <tr><td>signer.spiritprotocol.eth</td><td><code>0x1C848ad8...</code></td></tr>
+        <tr><td>spiritprotocol.eth</td><td><code>0x5D6D8518...</code></td></tr>
+    </table>
+    <div class="question">
+        <p><strong>Q: Which addresses are canonical for testnet?</strong></p>
+        <p style="color: #888;">SDK has different addresses than contracts repo.</p>
+    </div>
+</div>
+
+<div class="slide" id="s14">
+    <span class="slide-num">14/16</span>
+    <h1>Decisions Locked <span class="checkmark">✓</span></h1>
+    <table>
+        <tr><th>Decision</th><th>Answer</th></tr>
+        <tr><td>Merkle strategy</td><td><span class="checkmark">✓</span> Backend snapshot at creation</td></tr>
+        <tr><td>Self-service gating</td><td><span class="checkmark">✓</span> Backend-controlled (not contract)</td></tr>
+        <tr><td>LP funding</td><td><span class="checkmark">✓</span> Backend/platform handles</td></tr>
+        <tr><td>Timeline</td><td><span class="checkmark">✓</span> Quality > Speed (Jan 15 off)</td></tr>
+        <tr><td>First 10 children</td><td><span class="checkmark">✓</span> Manually approved, Eden = platform</td></tr>
+    </table>
+    <div class="highlight" style="margin-top: 20px;">
+        <p><strong>Key insight:</strong> x402 for API monetization, not contract fees</p>
+    </div>
+</div>
+
+<div class="slide" id="s15">
+    <span class="slide-num">15/16</span>
+    <h1>Approved Architecture</h1>
+    <pre>Agent requests via x402 API
+        ↓
+Backend validates request
+        ↓
+Backend takes Spirit holder snapshot
+        ↓
+Backend generates merkle root
+        ↓
+Backend calculates sqrtPriceX96
+        ↓
+Backend calls createChild (pays gas)
+        ↓
+Agent token created</pre>
+    <div class="highlight" style="margin-top: 20px;">
+        <p><strong>Contracts stay tight.</strong> Permissionless layer is the backend API.</p>
+    </div>
+</div>
+
+<div class="slide" id="s16">
+    <span class="slide-num">16/16</span>
+    <h1>Action Items</h1>
+    <h3>Pierre</h3>
+    <ul>
+        <li>Send sqrtPriceX96 calculation formula</li>
+    </ul>
+    <h3>Spirit Team</h3>
+    <ul>
+        <li>Build backend: snapshot, merkle, price services</li>
+        <li>Integrate x402 for API monetization</li>
+        <li>Update website (token split, SDK claims)</li>
+        <li>Plan first 10 children with Eden</li>
+    </ul>
+    <div class="highlight" style="margin-top: 30px;">
+        <p style="font-size: 1.3rem;"><strong>Quality > Speed</strong></p>
+        <p>Self-service done right.</p>
+    </div>
+</div>
+
+<nav class="nav">
+    <a href="#s1">↑ Top</a>
+</nav>
+
+</body>
+</html>
