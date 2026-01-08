@@ -142,6 +142,12 @@ interface ISpiritRegistry is IERC8004IdentityRegistry {
         address platform
     );
 
+    event SpiritAttached(
+        uint256 indexed spiritId,
+        address indexed externalRegistry,
+        uint256 indexed externalAgentId
+    );
+
     event TreasuryUpdated(
         uint256 indexed agentId,
         address oldTreasury,
@@ -171,8 +177,10 @@ interface ISpiritRegistry is IERC8004IdentityRegistry {
 
     /**
      * @notice Register a Spirit agent (extends ERC-8004 register)
+     * @dev Creates ERC-8004 identity + Spirit economics in one transaction.
+     *      Sets agentWallet = treasury (Safe multisig).
      * @param agentURI URI pointing to agent registration JSON
-     * @param artist Address of the creator/trainer
+     * @param artist Address of the creator/trainer (becomes ERC-8004 owner)
      * @param platform Address of the platform
      * @param treasuryOwners Initial Safe multisig owners
      * @param treasuryThreshold Safe threshold for transactions
@@ -188,7 +196,8 @@ interface ISpiritRegistry is IERC8004IdentityRegistry {
 
     /**
      * @notice Attach Spirit economics to existing ERC-8004 agent
-     * @dev For agents already registered in another ERC-8004 registry
+     * @dev SECURITY: Caller must be owner of the external agent.
+     *      Implementation MUST verify: externalRegistry.ownerOf(externalAgentId) == msg.sender
      * @param externalRegistry The ERC-8004 registry address
      * @param externalAgentId The agent's ID in that registry
      * @param artist Address of the creator/trainer
@@ -200,6 +209,30 @@ interface ISpiritRegistry is IERC8004IdentityRegistry {
         address artist,
         address platform
     ) external returns (uint256 spiritId);
+
+    /**
+     * @notice Create child token for an agent
+     * @dev Only callable by agent owner
+     */
+    function createChildToken(
+        uint256 agentId,
+        string calldata name,
+        string calldata symbol,
+        bytes32 merkleRoot,
+        uint160 initialSqrtPriceX96
+    ) external;
+
+    /**
+     * @notice Update treasury for an agent
+     * @dev Only callable by current treasury via multisig
+     */
+    function updateTreasury(uint256 agentId, address newTreasury) external;
+
+    /**
+     * @notice Update revenue configuration
+     * @dev Only callable by agent owner, must sum to 10000 bps
+     */
+    function setRevenueConfig(uint256 agentId, RevenueConfig calldata config) external;
 
     /**
      * @notice Get Spirit-specific configuration for an agent
@@ -233,9 +266,11 @@ interface ISpiritRegistry is IERC8004IdentityRegistry {
 
     /**
      * @notice Route revenue to an agent's stakeholders
+     * @dev ETH: token=address(0), uses msg.value, amount ignored
+     *      ERC-20: token=address, msg.value must be 0, uses transferFrom
      * @param agentId The agent receiving revenue
      * @param token The token being distributed (address(0) for ETH)
-     * @param amount The amount to distribute
+     * @param amount The amount to distribute (ignored for ETH)
      */
     function routeRevenue(
         uint256 agentId,

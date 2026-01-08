@@ -11,10 +11,11 @@
 HTTP 402 "Payment Required" — a standardized way for AI agents to pay for API services.
 
 **Key Features:**
-- Zero gas for callers (EIP-712 signatures)
-- Real-time streaming payments (Superfluid native)
+- Streaming payments (Superfluid native)
 - Built for autonomous agent economy
-- No upfront costs, pay-as-you-use
+- Ongoing subscription model (not per-request)
+
+**Clarification:** x402 uses Superfluid streams, which require an initial on-chain transaction to open. Once open, the stream flows continuously until closed. This is a subscription model, not per-request gas-free payments.
 
 **Documentation:** https://x402.superfluid.org/
 
@@ -116,15 +117,15 @@ const x402Middleware = async (req, res, next) => {
       protocol: 'x402',
       recipient: SPIRIT_TREASURY_ADDRESS,
       minFlowRate: MIN_FLOW_RATE,
-      token: USDC_ADDRESS,  // or SPIRIT
-      instructions: 'Open Superfluid stream to continue'
+      token: USDCx_ADDRESS,  // Super Token (wrapped USDC)
+      instructions: 'Open Superfluid stream to Spirit Treasury'
     });
   }
 
   const verification = await verifyX402Payment(paymentHeader, {
     recipient: SPIRIT_TREASURY_ADDRESS,
     minFlowRate: MIN_FLOW_RATE,
-    token: USDC_ADDRESS
+    token: USDCx_ADDRESS  // Super Token (wrapped USDC)
   });
 
   if (!verification.valid) {
@@ -138,16 +139,27 @@ const x402Middleware = async (req, res, next) => {
 };
 ```
 
-### Payment Rates
+### Payment Model
 
-| Operation | Suggested Rate | Per |
-|-----------|----------------|-----|
-| Agent creation | 10 USDC | Request |
-| Revenue distribution | 0.01 USDC | Request |
-| Status queries | Free | - |
-| Merkle proofs | Free | - |
+**Subscription-based streaming (not per-request):**
 
-**Note:** Rates TBD — balance spam prevention with accessibility.
+The x402 model uses continuous Superfluid streams. The backend verifies an active stream with sufficient flow rate exists — it does NOT deduct per-request.
+
+| Access Tier | Minimum Flow Rate | Monthly Cost | Access |
+|-------------|-------------------|--------------|--------|
+| Basic | 38580 wei/sec | ~100 USDCx/month | Agent creation, queries |
+| Pro | 385802 wei/sec | ~1000 USDCx/month | Unlimited operations |
+| Free | 0 | Free | Status queries, merkle proofs |
+
+**Token:** USDCx (wrapped USDC Super Token on Base)
+
+**Enforcement:**
+- Backend verifies stream exists from sender → Spirit Treasury
+- Backend verifies flow rate >= minimum for the operation tier
+- Stream must be active (timestamp > 0 in CFA Forwarder)
+- If stream is insufficient, return 402 with instructions
+
+**Note:** Agent pays continuously while stream is open, regardless of API usage. Close stream to stop payments.
 
 ---
 

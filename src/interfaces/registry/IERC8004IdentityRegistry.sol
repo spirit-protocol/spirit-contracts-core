@@ -57,11 +57,14 @@ interface IERC8004IdentityRegistry {
     );
 
     /// @notice Emitted when metadata is set
+    /// @dev Note: indexedMetadataKey is indexed for efficient filtering but limited to 32 bytes.
+    ///      metadataKey contains the full key string. metadataValue is bytes to support
+    ///      arbitrary data encoding (implementations may use abi.encode(string) for string values).
     event MetadataSet(
         uint256 indexed agentId,
-        string indexed indexedMetadataKey,
+        bytes32 indexed indexedMetadataKey,
         string metadataKey,
-        bytes metadataValue
+        string metadataValue
     );
 
     //     ______           __                     ______

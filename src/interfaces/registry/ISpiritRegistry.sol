@@ -131,11 +131,23 @@ interface ISpiritRegistry is IERC8004IdentityRegistry {
 
     /**
      * @notice Register a Spirit agent (extends ERC-8004 register)
-     * @dev Creates ERC-8004 identity + Spirit economics in one transaction
+     * @dev Creates ERC-8004 identity + Spirit economics in one transaction.
+     *
+     *      Wallet/Treasury mapping:
+     *      - ERC-8004's agentWallet is set to the treasury address
+     *      - This means agentWalletOf(agentId) == getTreasury(agentId)
+     *      - The treasury (Safe multisig) acts as the agent's operational wallet
+     *      - Owner (artist) controls identity; treasury controls funds
+     *
+     *      Implementation MUST:
+     *      - Deploy Safe multisig with treasuryOwners and treasuryThreshold
+     *      - Call inherited setAgentWallet() to set agentWallet = treasury
+     *      - Store Spirit-specific config (artist, platform, etc.)
+     *
      * @param agentURI URI pointing to agent registration JSON
-     * @param artist Address of the creator/trainer
+     * @param artist Address of the creator/trainer (becomes ERC-8004 owner)
      * @param platform Address of the platform
-     * @param treasuryOwners Initial Safe multisig owners
+     * @param treasuryOwners Initial Safe multisig owners (must include artist and agent)
      * @param treasuryThreshold Safe threshold for transactions
      * @return agentId The ERC-8004 compatible agent ID
      */
@@ -149,8 +161,12 @@ interface ISpiritRegistry is IERC8004IdentityRegistry {
 
     /**
      * @notice Attach Spirit economics to existing ERC-8004 agent
-     * @dev For agents already registered in another ERC-8004 registry
-     * @param externalRegistry The ERC-8004 registry address
+     * @dev For agents already registered in another ERC-8004 registry.
+     *      SECURITY: Caller must be the owner of the external agent.
+     *      Implementation MUST verify ownership via:
+     *      - IERC8004IdentityRegistry(externalRegistry).ownerOf(externalAgentId) == msg.sender
+     *      This prevents unauthorized attachment to someone else's agent.
+     * @param externalRegistry The ERC-8004 registry address (must implement IERC8004IdentityRegistry)
      * @param externalAgentId The agent's ID in that registry
      * @param artist Address of the creator/trainer
      * @param platform Address of the platform
@@ -183,9 +199,19 @@ interface ISpiritRegistry is IERC8004IdentityRegistry {
     /**
      * @notice Route revenue to an agent's stakeholders
      * @dev Distributes according to RevenueConfig (default: 25/25/25/25)
+     *
+     *      ETH vs ERC-20 handling:
+     *      - For ETH: token = address(0), amount is ignored, msg.value is distributed
+     *      - For ERC-20: token = token address, msg.value MUST be 0, amount is transferred via transferFrom
+     *
+     *      Implementation MUST:
+     *      - Revert if token == address(0) && msg.value == 0 (no ETH sent)
+     *      - Revert if token != address(0) && msg.value > 0 (ETH sent with ERC-20)
+     *      - For ERC-20: call transferFrom(msg.sender, ...) for each recipient
+     *
      * @param agentId The agent receiving revenue
      * @param token The token being distributed (address(0) for ETH)
-     * @param amount The amount to distribute
+     * @param amount The amount to distribute (ignored for ETH, uses msg.value)
      */
     function routeRevenue(
         uint256 agentId,
