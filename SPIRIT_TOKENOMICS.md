@@ -77,7 +77,7 @@
 
 **OTC Sales (110M):**
 - Strategic private sales to DAOs, VCs, ecosystem partners
-- Suggested price: $0.04/SPIRIT ($40M FDV)
+- Suggested price: $0.04/SPIRIT ($20M FDV)
 - Suggested minimum: $25,000
 - 12-month lockup recommended
 
@@ -309,7 +309,7 @@ Stake child tokens → Earn more SPIRIT → Repeat
 - Total supply: 1B SPIRIT
 - TGE: January 15, 2026
 - Presale: 50M available at $0.04/token
-- FDV at presale price: $40M
+- FDV at presale price: $20M
 
 ### For Team/Advisors
 - Your allocation: Check Community Upfront table above

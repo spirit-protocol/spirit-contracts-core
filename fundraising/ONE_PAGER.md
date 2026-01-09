@@ -84,7 +84,7 @@ Not hypotheticals. Earning today.
 | | |
 |---|---|
 | **Raise** | $2,000,000 |
-| **Valuation** | $40M FDV |
+| **Valuation** | $20M FDV |
 | **Price** | $0.04 / SPIRIT |
 | **Vesting** | 12-month linear |
 | **TGE** | Q1 2026 |

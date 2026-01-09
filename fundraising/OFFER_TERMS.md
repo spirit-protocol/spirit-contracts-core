@@ -7,7 +7,7 @@
 
 ---
 
-Spirit Protocol is raising $2,000,000 in a presale of SPIRIT tokens at $0.04 per token, representing a $40,000,000 fully diluted valuation. Investors receive SPIRIT tokens subject to a 1-year linear vesting schedule with no cliff, beginning at TGE (January 15, 2026). Minimum investment is $25,000 (625,000 SPIRIT). Presale closes January 10, 2026. Tokens will be delivered to your provided wallet address via Superfluid vesting contracts on Base. This is a token purchase agreement, not equity.
+Spirit Protocol is raising $2,000,000 in a presale of SPIRIT tokens at $0.04 per token, representing a $20,000,000 fully diluted valuation. Investors receive SPIRIT tokens subject to a 1-year linear vesting schedule with no cliff, beginning at TGE (January 15, 2026). Minimum investment is $25,000 (625,000 SPIRIT). Presale closes January 10, 2026. Tokens will be delivered to your provided wallet address via Superfluid vesting contracts on Base. This is a token purchase agreement, not equity.
 
 ---
 
@@ -19,7 +19,7 @@ Spirit Protocol is raising $2,000,000 in a presale of SPIRIT tokens at $0.04 per
 **Total Supply:** 1,000,000,000 SPIRIT
 **Presale Allocation:** 50,000,000 SPIRIT (5% of supply)
 **Price per Token:** $0.04
-**Fully Diluted Valuation:** $40,000,000
+**Fully Diluted Valuation:** $20,000,000
 **Raise Target:** $2,000,000
 **Minimum Investment:** $25,000 (625,000 SPIRIT)
 **Vesting:** 1-year linear, no cliff, via Superfluid
