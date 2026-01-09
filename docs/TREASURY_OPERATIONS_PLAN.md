@@ -32,7 +32,7 @@ Large private sales to strategic investors, DAOs, or ecosystem partners who want
 - [ ] FDV-based: $_____M FDV ÷ 1B = $_____ per SPIRIT
 - [ ] Negotiated per deal
 
-**Suggested**: $0.04/SPIRIT ($20M FDV) — matches presale if same pricing
+**Suggested**: $0.04/SPIRIT ($40M FDV) — matches presale if same pricing
 
 **Minimum Purchase**:
 - [ ] $10,000 minimum (250K SPIRIT at $0.04)
@@ -97,7 +97,7 @@ Smaller public/semi-public sale for community members and supporters who want ea
 **Suggested**: Simple website or direct sale — Spirit Protocol is not a "launch" project, more curated
 
 **Price**:
-- [ ] Same as OTC: $0.04/SPIRIT ($20M FDV)
+- [ ] Same as OTC: $0.04/SPIRIT ($40M FDV)
 - [ ] Discount to OTC: $0.03/SPIRIT ($30M FDV)
 - [ ] Premium to OTC: $0.05/SPIRIT ($50M FDV)
 

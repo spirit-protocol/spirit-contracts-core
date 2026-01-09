@@ -1,6 +1,6 @@
 # Spirit Protocol Investor CRM
 **NYC Fundraising Week:** December 15-20, 2025
-**Target:** $2M @ $20M FDV | Min check $25K
+**Target:** $2M @ $40M FDV | Min check $25K
 
 ---
 
@@ -123,7 +123,7 @@ Hey [CONNECTOR],
 
 Quick ask — would you intro me to [INVESTOR]?
 
-Building Spirit Protocol (economic layer for AI agents). We have live agents generating revenue (Abraham ~$5K/week, Solienne $30K at Paris Photo). Raising $2M at $20M FDV, TGE Jan 15.
+Building Spirit Protocol (economic layer for AI agents). We have live agents generating revenue (Abraham ~$5K/week, Solienne $30K at Paris Photo). Raising $2M at $40M FDV, TGE Jan 15.
 
 I'm in NYC Dec 15-20 if they're around.
 
@@ -142,7 +142,7 @@ Great meeting today. As discussed:
 
 • Spirit Protocol = economic layer for AI agents
 • Live agents: Abraham ($5K/week), Solienne ($30K Paris Photo), Gigabrain (enterprise)
-• Raising $2M @ $20M FDV, $0.04/token
+• Raising $2M @ $40M FDV, $0.04/token
 • 1yr linear vest, no cliff, min $25K
 • TGE: Jan 15, 2026
 

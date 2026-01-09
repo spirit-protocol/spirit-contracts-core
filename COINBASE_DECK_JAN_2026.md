@@ -172,7 +172,7 @@ interface ISpiritRegistry is IERC8004IdentityRegistry {
 |-----------|-------|
 | Total Supply | 1,000,000,000 |
 | Network | Base |
-| Current FDV | $20M |
+| Current FDV | $40M |
 | TGE | Q1 2026 |
 
 ### Allocation
@@ -243,7 +243,7 @@ interface ISpiritRegistry is IERC8004IdentityRegistry {
 | Term | Value |
 |------|-------|
 | Raise | $2,000,000 |
-| Valuation | $20M FDV |
+| Valuation | $40M FDV |
 | Price | $0.04 / SPIRIT |
 | Tokens | 50M (5%) |
 | Vesting | 12-month linear |
@@ -270,7 +270,7 @@ interface ISpiritRegistry is IERC8004IdentityRegistry {
 
 ## 10. The Ask
 
-1. **Presale participation** — Join current round at $20M FDV
+1. **Presale participation** — Join current round at $40M FDV
 2. **Token listing review** — Continue evaluation for Coinbase listing
 3. **Base ecosystem** — Distribution through Base app channels
 4. **ERC-8004 collaboration** — Spirit as economic layer reference

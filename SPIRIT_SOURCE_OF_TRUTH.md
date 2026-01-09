@@ -1,17 +1,15 @@
 # SPIRIT PROTOCOL — SOURCE OF TRUTH
 
-**Last Updated:** January 10, 2026 @ 3:00pm PST
+**Last Updated:** January 8, 2026 @ 4:00pm PST
 **Updated By:** Seth (via Claude Code)
 **Status:** LOCKED unless noted
-**Last Review:** Materials refresh (Jan 10, 2026)
+**Last Review:** Pierre call (Jan 8, 2026)
 
 ---
 
 ## QUICK REFERENCE
 
-**One sentence:** Spirit provides full sovereignty for AI agents — identity, treasury, tokens, and revenue they control.
-
-**Positioning:** The first fully tokenized sovereignty layer for AI agents — built on ERC-8004 identity and x402 payments as primitives.
+**One sentence:** Spirit is how cultural AI agents persist — economically.
 
 **Token split (Agent):** 25/25/25/25 — Agent's 25% includes 5% LP (owned by agent wallet)
 
@@ -23,68 +21,17 @@
 
 **Architecture:** Backend-controlled self-service (not permissionless contracts)
 
-**Discovery Layer:** Spirit Index (spiritindex.org) — LMArena for cultural agents
-
 ---
 
 ## 1. CORE IDENTITY
 
 **Thesis:**
-> Spirit provides full sovereignty for AI agents — identity, treasury, tokens, and revenue they control. Not platforms controlling agents, but agents controlling themselves.
+> AI agents are proliferating. Most are ephemeral — they spike, speculate, and disappear. Culture doesn't work that way. Culture compounds. Spirit is infrastructure for the agents that matter.
 
-**Positioning Decision:** Lead with SOVEREIGNTY frame
-- ERC-8004 + x402 are primitives (interoperability, not dependency)
-- Spirit is the first complete sovereignty layer combining identity, treasury, tokens, and revenue routing
-- Spirit Index is the discovery layer (LMArena for agents)
-- Cultural agents (Abraham, Solienne) prove the model; sovereignty applies broadly
-
-**Differentiation:**
-- vs Virtuals/ai16z: Sovereignty-first, not speculation-first
-- vs ERC-8004 alone: Spirit adds treasury, tokens, and revenue routing
-- vs other infrastructure: Spirit Index creates legitimacy moat
-
----
-
-## 1A. SPIRIT INDEX (DISCOVERY LAYER)
-
-**URL:** https://spiritindex.org
-**Status:** LIVE
-**Positioning:** LMArena for cultural agents
-
-### What It Is
-
-Spirit Index evaluates which agents have real persistence — the discovery layer for which agents qualify for Spirit sovereignty.
-
-### 7-Dimension Framework
-
-| Dimension | What It Measures |
-|-----------|------------------|
-| Persistence | Continuous practice, archive depth, operational history |
-| Autonomy | Self-directed behavior, financial independence |
-| Cultural Impact | Audience reach, critical recognition, market traction |
-| Economic Reality | Revenue streams, treasury, sustainable model |
-| Governance | Decision-making structure, stakeholder alignment |
-| Technical | Architecture quality, operational infrastructure |
-| Narrative | Identity coherence, communication clarity |
-
-### Current Index
-
-- **19 entities indexed** (as of Jan 2026)
-- **Top entities:** Plantoid (60/70), Botto (55/70), Olas (54/70), Holly+ (53/70), terra0 (53/70)
-- **Max score:** 70 points (10 per dimension)
-
-### Index → Sovereignty Pipeline
-
-```
-Spirit Index (Discovery)  →  Spirit Protocol (Sovereignty)
-        ↓                            ↓
- Evaluate persistence         Provide full sovereignty:
- Score across 7 dimensions    - Identity (onchain)
- Rank entities                - Treasury (Safe multisig)
-        ↓                     - Token (native + liquidity)
- High-scoring agents          - Revenue routing (25/25/25/25)
- qualify for Spirit
-```
+**Positioning Decision:** Lead with CULTURAL frame (not infrastructure)
+- Abraham's 13-year covenant is unique
+- Infrastructure can be replicated; culture can't
+- Differentiation from Virtuals, ai16z, etc.
 
 ---
 
@@ -310,7 +257,7 @@ Agent token created
 | Term | Value |
 |------|-------|
 | Raise | $2,000,000 |
-| Valuation | $20M FDV |
+| Valuation | $40M FDV |
 | Price | $0.04 / SPIRIT |
 | Tokens | 50M (5%) |
 | Vesting | 12-month linear |
@@ -347,21 +294,15 @@ Agent token created
 ```
 SPIRIT_SOURCE_OF_TRUTH.md ← YOU ARE HERE (canonical facts)
          |
-         ├── REFRESH_PLAN_JAN_2026.md (materials refresh plan)
          ├── SECURITIES_AUDIT_DEC_19.md (website fix checklist)
          ├── IMPROVEMENT_PLAN_DEC_19.md (phased roadmap)
          |
          └── Downstream (must match Source of Truth):
-              ├── spiritprotocol.io (sovereignty framing + Spirit Index)
-              ├── spiritindex.org (discovery layer)
-              ├── Whitepaper v1.1 (before TGE)
-              ├── Investor Deck v4 (Manus)
-              └── Base Deck v4 (Manus)
+              ├── ONE_PAGER.md
+              ├── spiritprotocol.io
+              ├── Whitepaper
+              └── Deck
 ```
-
-**Manus Deck Links (v4 — January 2026):**
-- Investor: https://manus.im/share/CvVAXEq5J2FZQFnrnCYNiz?replay=1
-- Base: https://manus.im/share/MCGWSovhC459ATJUJAzKNn?replay=1
 
 **Rule:** If Source of Truth and another doc conflict, Source of Truth wins.
 
@@ -383,28 +324,27 @@ SPIRIT_SOURCE_OF_TRUTH.md ← YOU ARE HERE (canonical facts)
 
 ---
 
-## 13. PRIMITIVES: ERC-8004 + x402
+## 13. ERC-8004 INTEGRATION (DRAFT)
 
-**Status:** LOCKED framing
-**Standard:** ERC-8004 Trustless Agents (Coinbase co-authored)
-**Reference:** `ERC8004_INTEGRATION_SPEC.md`, `X402_INTEGRATION_SPEC.md`
+**Status:** DRAFT — Needs team review
+**Standard:** ERC-8004 Trustless Agents (Draft v1, Oct 2025)
+**Reference:** `ERC8004_INTEGRATION_SPEC.md`
 
-### Decision: Spirit is ERC-8004 COMPATIBLE (Not "Extends")
+### Decision: Spirit EXTENDS ERC-8004
 
-Spirit leverages ERC-8004 and x402 as primitives for full sovereignty:
+Spirit implements the ERC-8004 Identity Registry interface and adds economic extensions:
 
 ```
-Identity Primitive:  ERC-8004 (Coinbase co-authored) — interoperability
-Payment Primitive:   x402 (Superfluid streaming) — autonomous payments
-Sovereignty Layer:   Spirit Protocol — treasury, tokens, revenue routing
+ERC-8004 Layer: Identity + Reputation + Validation
+Spirit Layer:   Treasury + Revenue Router + Token Factory
 ```
 
-### Why Primitives (Not "Extends")
+### Why Extend (Not Replace)
 
-1. **Interoperability, not dependency** — Spirit doesn't chase the standard
-2. **Composability** — Any ERC-8004 agent can add Spirit sovereignty
-3. **Complete stack** — ERC-8004 gives identity, x402 gives payments, Spirit adds the rest
-4. **No single point of failure** — Spirit works with or without ERC-8004 adoption
+1. **Network effects** — ERC-8004 has MetaMask, Coinbase, EF, Google backing
+2. **Separation of concerns** — Identity ≠ Economics
+3. **Composability** — Any ERC-8004 agent can add Spirit economics
+4. **x402 alignment** — Both ERC-8004 and Spirit use x402 for payments
 
 ### Spirit Extensions to ERC-8004
 
@@ -448,13 +388,10 @@ Sovereignty Layer:   Spirit Protocol — treasury, tokens, revenue routing
 | x402 middleware for API monetization | ✅ DONE | Spirit | Jan 8, 2026 |
 | ERC-8004 integration spec | ✅ DONE | Spirit | Jan 8, 2026 |
 | ERC-8004 contract implementation | TODO | Pierre + Spirit | Before TGE |
-| Website: Sovereignty + Spirit Index refresh | ✅ DONE | Seth | Jan 10, 2026 |
-| Investor Deck v4 (sovereignty framing) | ✅ DONE | Seth | Jan 10, 2026 |
-| Base Deck v4 (sovereignty framing) | ✅ DONE | Seth | Jan 10, 2026 |
-| Source of Truth: Sovereignty + Spirit Index | ✅ DONE | Seth | Jan 10, 2026 |
+| Website: Fix 25/25/25/25 framing | TODO | Seth | This week |
 | First 10 children planning | TODO | Eden + Spirit | Before launch |
 | SDK npm publish | BLOCKED | Pierre | After contracts stable |
-| Whitepaper v1.1 (primitives section) | TODO | Seth | Before TGE |
+| Whitepaper PDF update | TODO | Seth | After architecture locked |
 
 ---
 
@@ -520,7 +457,6 @@ Emphasize governance participation, not yield.
 | Dec 19, 2025 | 8:00pm | Integrated securities audit + improvement plan | Claude.ai |
 | Jan 8, 2026 | 12:30pm | Pierre call: Backend architecture, x402, merkle strategy | Claude Code |
 | Jan 8, 2026 | 4:00pm | Backend services implemented, ERC-8004 integration spec | Claude Code |
-| Jan 10, 2026 | 3:00pm | Materials refresh: Sovereignty framing, Spirit Index, primitives language | Claude Code |
 
 ---
 
