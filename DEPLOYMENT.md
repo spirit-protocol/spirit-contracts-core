@@ -198,6 +198,40 @@ ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
 | Staking Pool (Beacon)  | [`0x6A96aC9BAF36F8e8b6237eb402d07451217C7540`](https://sepolia.basescan.org/address/0x6A96aC9BAF36F8e8b6237eb402d07451217C7540) |
 | Spirit Factory         | [`0x879d67000C938142F472fB8f2ee0b6601E2cE3C6`](https://sepolia.basescan.org/address/0x879d67000C938142F472fB8f2ee0b6601E2cE3C6) |
 | Spirit Vesting Factory | [`0x94bea63d6eC10AF980bf8C7aEFeE04665D355AFe`](https://sepolia.basescan.org/address/0x94bea63d6eC10AF980bf8C7aEFeE04665D355AFe) |
+| Spirit Registry        | [`0x98f61d33bFD87a2e73aEf4a1bf1c8E534Ad0d5Aa`](https://sepolia.basescan.org/address/0x98f61d33bFD87a2e73aEf4a1bf1c8E534Ad0d5Aa) |
+
+### Deploy SpiritRegistry
+
+The SpiritRegistry is deployed separately from the main protocol contracts. It extends ERC-8004 with Spirit economics (treasury, revenue routing, 25/25/25/25 split).
+
+**Prerequisites:**
+- `TESTNET_DEPLOYER` keystore imported (`cast wallet import TESTNET_DEPLOYER --interactive`)
+- `$BASE_SEPOLIA_RPC_URL` set
+- `$BASESCAN_API_KEY` set
+
+**Deploy + Verify + Register Abraham:**
+```shell
+forge script script/DeploySpiritRegistry.s.sol:DeploySpiritRegistry \
+  --rpc-url $BASE_SEPOLIA_RPC_URL \
+  --account TESTNET_DEPLOYER \
+  --broadcast \
+  --verify \
+  --etherscan-api-key $BASESCAN_API_KEY
+```
+
+**Post-deploy verification:**
+```shell
+# Verify Abraham is agent #1
+cast call <REGISTRY_ADDRESS> "ownerOf(uint256)" 1 --rpc-url $BASE_SEPOLIA_RPC_URL
+cast call <REGISTRY_ADDRESS> "hasSpiritAttached(uint256)" 1 --rpc-url $BASE_SEPOLIA_RPC_URL
+cast call <REGISTRY_ADDRESS> "getRevenueConfig(uint256)" 1 --rpc-url $BASE_SEPOLIA_RPC_URL
+```
+
+**Post-deploy updates:**
+1. Replace `TBD` in this table with the deployed address
+2. Update `src/static/protocol.json` — add `contractAddress` to `erc8004` section
+3. Update `src/static/llm.txt` and `src/static/llms.txt` — update Contract Addresses table
+4. Rebuild site: `npm run build && npm run test:validate -- --url file`
 
 ### Logs
 
