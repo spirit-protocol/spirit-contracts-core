@@ -29,10 +29,12 @@ export const config = {
 
   // Blockchain
   blockchain: {
-    rpcUrl: process.env.RPC_URL || 'https://sepolia.base.org',
-    chainId: parseInt(process.env.CHAIN_ID || '84532'), // Base Sepolia
-    spiritTokenAddress: process.env.SPIRIT_TOKEN_ADDRESS || '0xc7e9de362C6eA2Cc03863ECe330622146Ff1c18B',
-    spiritFactoryAddress: process.env.SPIRIT_FACTORY_ADDRESS || '0x879d67000C938142F472fB8f2ee0b6601E2cE3C6',
+    rpcUrl: process.env.RPC_URL || 'https://mainnet.base.org',
+    chainId: parseInt(process.env.CHAIN_ID || '8453'), // Base Mainnet
+    spiritTokenAddress: process.env.SPIRIT_TOKEN_ADDRESS || '0x0000000000000000000000000000000000000000', // TODO: TGE
+    spiritFactoryAddress: process.env.SPIRIT_FACTORY_ADDRESS || '0x0000000000000000000000000000000000000000', // TODO: TGE
+    spiritRegistryAddress: process.env.SPIRIT_REGISTRY_ADDRESS || '0xF2709ceF1Cf4893ed78D3220864428b32b12dFb9',
+    protocolTreasury: process.env.PROTOCOL_TREASURY || '0x5D6D8518A1d564c85ea5c41d1dc0deca70F2301C',
     adminPrivateKey: process.env.ADMIN_PRIVATE_KEY || '', // NEVER commit this
   },
 

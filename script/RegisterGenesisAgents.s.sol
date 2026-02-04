@@ -15,17 +15,17 @@ import { console } from "forge-std/console.sol";
  *
  * Usage:
  *   forge script script/RegisterGenesisAgents.s.sol:RegisterGenesisAgents \
- *     --rpc-url https://sepolia.base.org \
- *     --account TESTNET_DEPLOYER \
+ *     --rpc-url https://mainnet.base.org \
+ *     --account MAINNET_DEPLOYER \
  *     --broadcast
  */
 contract RegisterGenesisAgents is Script {
-    /// @dev Deployed SpiritRegistry on Base Sepolia
-    address constant REGISTRY = 0x98f61d33bFD87a2e73aEf4a1bf1c8E534Ad0d5Aa;
+    /// @dev Deployed SpiritRegistry on Base Mainnet
+    address constant REGISTRY = 0xF2709ceF1Cf4893ed78D3220864428b32b12dFb9;
 
-    /// @dev Deployer wallet — used as artist/platform placeholder on testnet.
-    ///      Re-register with real wallets (Gene, Kristi, Eden) for mainnet.
-    address constant DEPLOYER = 0xD50dE5C8eEFa2Ab8b2A9D724A28797E4382df472;
+    /// @dev Deployer wallet — used as artist/platform placeholder.
+    ///      Transfer ownership to real wallets (Gene, Kristi, Eden) later.
+    address constant DEPLOYER = 0x2fC0f360160fAA281420B3f2F0e13767B4789CEe;
 
     function run() external {
         vm.startBroadcast();

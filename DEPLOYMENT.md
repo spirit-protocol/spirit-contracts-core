@@ -198,7 +198,7 @@ ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
 | Staking Pool (Beacon)  | [`0x6A96aC9BAF36F8e8b6237eb402d07451217C7540`](https://sepolia.basescan.org/address/0x6A96aC9BAF36F8e8b6237eb402d07451217C7540) |
 | Spirit Factory         | [`0x879d67000C938142F472fB8f2ee0b6601E2cE3C6`](https://sepolia.basescan.org/address/0x879d67000C938142F472fB8f2ee0b6601E2cE3C6) |
 | Spirit Vesting Factory | [`0x94bea63d6eC10AF980bf8C7aEFeE04665D355AFe`](https://sepolia.basescan.org/address/0x94bea63d6eC10AF980bf8C7aEFeE04665D355AFe) |
-| Spirit Registry        | [`0x98f61d33bFD87a2e73aEf4a1bf1c8E534Ad0d5Aa`](https://sepolia.basescan.org/address/0x98f61d33bFD87a2e73aEf4a1bf1c8E534Ad0d5Aa) |
+| Spirit Registry        | [`0xF2709ceF1Cf4893ed78D3220864428b32b12dFb9`](https://basescan.org/address/0xF2709ceF1Cf4893ed78D3220864428b32b12dFb9) |
 
 ### Deploy SpiritRegistry
 
