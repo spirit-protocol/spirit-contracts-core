@@ -55,7 +55,7 @@ contract RegisterGenesisCohort2 is Script {
     }
 
     function _getAgents() internal pure returns (GenesisAgent[] memory) {
-        GenesisAgent[] memory agents = new GenesisAgent[](7);
+        GenesisAgent[] memory agents = new GenesisAgent[](8);
 
         // ── Slot 0: Ganchitecture ────────────────────────────────────────
         agents[0] = GenesisAgent({
@@ -65,27 +65,27 @@ contract RegisterGenesisCohort2 is Script {
             operatorWallet: address(0) // TODO: operator for daily submission
         });
 
-        // ── Slot 1: Divinity ─────────────────────────────────────────────
+        // ── Slot 1: Manoloide ─────────────────────────────────────────────
         agents[1] = GenesisAgent({
+            name: "Manoloide",
+            metadataURI: "https://spiritprotocol.io/agents/manoloide/metadata.json",
+            artistWallet: address(0), // TODO: Manolo wallet (buying computer + setting up wallet)
+            operatorWallet: address(0)
+        });
+
+        // ── Slot 2: Divinity ─────────────────────────────────────────────
+        agents[2] = GenesisAgent({
             name: "Divinity",
             metadataURI: "https://spiritprotocol.io/agents/divinity/metadata.json",
             artistWallet: address(0), // TODO: Mikey Woodbridge wallet
             operatorWallet: address(0)
         });
 
-        // ── Slot 2: Johnny Rico ──────────────────────────────────────────
-        agents[2] = GenesisAgent({
+        // ── Slot 3: Johnny Rico ──────────────────────────────────────────
+        agents[3] = GenesisAgent({
             name: "Johnny Rico",
             metadataURI: "https://spiritprotocol.io/agents/johnny-rico/metadata.json",
             artistWallet: address(0), // TODO: eko33 wallet
-            operatorWallet: address(0)
-        });
-
-        // ── Slot 3: TBD ─────────────────────────────────────────────────
-        agents[3] = GenesisAgent({
-            name: "TBD_4",
-            metadataURI: "",
-            artistWallet: address(0),
             operatorWallet: address(0)
         });
 
@@ -108,6 +108,14 @@ contract RegisterGenesisCohort2 is Script {
         // ── Slot 6: TBD ─────────────────────────────────────────────────
         agents[6] = GenesisAgent({
             name: "TBD_7",
+            metadataURI: "",
+            artistWallet: address(0),
+            operatorWallet: address(0)
+        });
+
+        // ── Slot 7: TBD ─────────────────────────────────────────────────
+        agents[7] = GenesisAgent({
+            name: "TBD_8",
             metadataURI: "",
             artistWallet: address(0),
             operatorWallet: address(0)
