@@ -43,7 +43,7 @@ library NetworkConfig {
     function getBaseMainnetConfig() internal pure returns (SpiritDeploymentConfig memory) {
         return SpiritDeploymentConfig({
             admin: address(0),
-            treasury: address(0),
+            treasury: 0x70EF567012cdc4734Ac97AC9Ca4711C4f4560498,
             distributor: address(0),
             vestingScheduler: 0x6Bf35A170056eDf9aEba159dce4a640cfCef9312,
             superTokenFactory: 0xe20B9a38E0c96F61d1bA6b42a61512D56Fea1Eb3,
