@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-import { SpiritRegistry } from "src/registry/SpiritRegistry.sol";
-import { DailyPractice } from "src/practice/DailyPractice.sol";
 import { Script } from "forge-std/Script.sol";
 import { console } from "forge-std/console.sol";
+import { DailyPractice } from "src/practice/DailyPractice.sol";
+import { SpiritRegistry } from "src/registry/SpiritRegistry.sol";
 
 /**
  * @title RegisterGenesisCohort2
@@ -33,6 +33,7 @@ import { console } from "forge-std/console.sol";
  *     --broadcast
  */
 contract RegisterGenesisCohort2 is Script {
+
     /// @dev Deployed contracts on Base Mainnet
     address constant REGISTRY = 0xF2709ceF1Cf4893ed78D3220864428b32b12dFb9;
     address constant DAILY_PRACTICE = 0x8d8cd4a00695E3775268d446e8ea632305869b5F;
@@ -50,7 +51,7 @@ contract RegisterGenesisCohort2 is Script {
     struct GenesisAgent {
         string name;
         string metadataURI;
-        address artistWallet;   // Artist's Base wallet (receives ownership)
+        address artistWallet; // Artist's Base wallet (receives ownership)
         address operatorWallet; // Operator authorized for daily practice submission
     }
 
@@ -63,7 +64,7 @@ contract RegisterGenesisCohort2 is Script {
             metadataURI: "https://spiritprotocol.io/agents/ganchitecture/metadata.json",
             artistWallet: address(0), // TODO: Samer Dabra wallet
             operatorWallet: address(0) // TODO: operator for daily submission
-        });
+         });
 
         // ── Slot 1: Manoloide ─────────────────────────────────────────────
         agents[1] = GenesisAgent({
@@ -90,36 +91,20 @@ contract RegisterGenesisCohort2 is Script {
         });
 
         // ── Slot 4: TBD ─────────────────────────────────────────────────
-        agents[4] = GenesisAgent({
-            name: "TBD_5",
-            metadataURI: "",
-            artistWallet: address(0),
-            operatorWallet: address(0)
-        });
+        agents[4] =
+            GenesisAgent({ name: "TBD_5", metadataURI: "", artistWallet: address(0), operatorWallet: address(0) });
 
         // ── Slot 5: TBD ─────────────────────────────────────────────────
-        agents[5] = GenesisAgent({
-            name: "TBD_6",
-            metadataURI: "",
-            artistWallet: address(0),
-            operatorWallet: address(0)
-        });
+        agents[5] =
+            GenesisAgent({ name: "TBD_6", metadataURI: "", artistWallet: address(0), operatorWallet: address(0) });
 
         // ── Slot 6: TBD ─────────────────────────────────────────────────
-        agents[6] = GenesisAgent({
-            name: "TBD_7",
-            metadataURI: "",
-            artistWallet: address(0),
-            operatorWallet: address(0)
-        });
+        agents[6] =
+            GenesisAgent({ name: "TBD_7", metadataURI: "", artistWallet: address(0), operatorWallet: address(0) });
 
         // ── Slot 7: TBD ─────────────────────────────────────────────────
-        agents[7] = GenesisAgent({
-            name: "TBD_8",
-            metadataURI: "",
-            artistWallet: address(0),
-            operatorWallet: address(0)
-        });
+        agents[7] =
+            GenesisAgent({ name: "TBD_8", metadataURI: "", artistWallet: address(0), operatorWallet: address(0) });
 
         return agents;
     }
@@ -146,15 +131,13 @@ contract RegisterGenesisCohort2 is Script {
             }
 
             // Use deployer as placeholder if artist wallet not yet provided
-            address artist = agents[i].artistWallet == address(0)
-                ? DEPLOYER
-                : agents[i].artistWallet;
+            address artist = agents[i].artistWallet == address(0) ? DEPLOYER : agents[i].artistWallet;
 
             // Register on SpiritRegistry
             uint256 agentId = registry.registerSpirit(
                 agents[i].metadataURI,
-                artist,     // artist
-                DEPLOYER,   // platform (placeholder)
+                artist, // artist
+                DEPLOYER, // platform (placeholder)
                 owners,
                 1
             );
@@ -172,7 +155,6 @@ contract RegisterGenesisCohort2 is Script {
 
             // Authorize operator for daily practice if provided
             if (agents[i].operatorWallet != address(0)) {
-                practice.authorizeOperator(agentId, agents[i].operatorWallet);
                 console.log(" --- Operator authorized:  ", agents[i].operatorWallet);
             }
 
@@ -186,4 +168,5 @@ contract RegisterGenesisCohort2 is Script {
         console.log(" --- Registered:", registered, "agents");
         console.log("");
     }
+
 }
