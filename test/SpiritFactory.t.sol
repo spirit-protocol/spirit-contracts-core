@@ -174,14 +174,13 @@ contract SpiritFactoryTest is SpiritTestBase {
         bool tokenOrderA = address(childTokenA) < address(_spirit);
         bool tokenOrderB = address(childTokenB) < address(_spirit);
 
+        uint256 i = 1;
         while (address(childTokenB) == address(0) || tokenOrderB == tokenOrderA) {
-            uint256 i = 1;
-
             bytes32 saltB = keccak256(abi.encode("i", i));
 
             (childTokenB,,) = _spiritFactory.createChild(
-                string(abi.encodePacked("name B", uint256(i))),
-                string(abi.encodePacked("symbol B", uint256(i))),
+                string(abi.encode("name B", uint256(i))),
+                string(abi.encode("symbol B", uint256(i))),
                 makeAddr("ARTIST_B"),
                 makeAddr("AGENT_B"),
                 bytes32(0),
