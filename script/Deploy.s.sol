@@ -59,9 +59,7 @@ contract DeploySpirit is Script {
         console.log("");
         console.log("===> DEPLOYMENT RESULTS");
         console.log(" --- Spirit Token              :", result.spirit);
-        console.log(" --- Reward Controller         :", result.rewardControllerProxy);
-        console.log(" --- Staking Pool              :", result.stakingPoolBeacon);
-        console.log(" --- Spirit Factory              :", result.spiritFactoryProxy);
+        console.log(" --- Spirit Factory            :", result.spiritFactoryProxy);
         console.log(" --- Spirit Vesting Factory    :", result.spiritVestingFactory);
         console.log("");
     }

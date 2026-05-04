@@ -3,9 +3,6 @@ pragma solidity ^0.8.26;
 /* Superfluid Imports */
 import { ISuperToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
 
-/* Local Imports */
-import { IStakingPool } from "src/interfaces/core/IStakingPool.sol";
-
 /**
  * @title ISpiritFactory
  * @notice ISpiritFactory interface
@@ -27,9 +24,6 @@ interface ISpiritFactory {
     //   / /   / / / / ___/ __/ __ \/ __ `__ \   / __/ / ___/ ___/ __ \/ ___/ ___/
     //  / /___/ /_/ (__  ) /_/ /_/ / / / / / /  / /___/ /  / /  / /_/ / /  (__  )
     //  \____/\__,_/____/\__/\____/_/ /_/ /_/  /_____/_/  /_/   \____/_/  /____/
-
-    /// @notice Thrown when the special allocation is greater than the default liquidity supply
-    error INVALID_SPECIAL_ALLOCATION();
 
     /// @notice Thrown when the Uniswap V4 pool initialization fails or has been initialized before
     error POOL_INITIALIZATION_FAILED();
@@ -62,32 +56,6 @@ interface ISpiritFactory {
         string memory symbol,
         address artist,
         address agent,
-        bytes32 merkleRoot,
-        bytes32 salt,
-        uint160 initialSqrtPriceX96
-    ) external returns (ISuperToken child, address airstreamAddress, address controllerAddress);
-
-    /**
-     * @notice Creates a child token and staking pool
-     * @dev This function is only callable by the DEFAULT_ADMIN_ROLE
-     * @param name The name of the child token
-     * @param symbol The symbol of the child token
-     * @param artist The address of the artist
-     * @param agent The address of the agent
-     * @param specialAllocation The amount of tokens reserved for the special allocation
-     * @param merkleRoot The merkle root containing the airdrop allocations
-     * @param salt The salt used to deploy the child token
-     * @param initialSqrtPriceX96 The initial sqrt price X96 for the Uniswap V4 pool SPIRIT/CHILD
-     * @return child The address of the child token
-     * @return airstreamAddress The address of the airstream
-     * @return controllerAddress The address of the airstream controller
-     */
-    function createChild(
-        string memory name,
-        string memory symbol,
-        address artist,
-        address agent,
-        uint256 specialAllocation,
         bytes32 merkleRoot,
         bytes32 salt,
         uint160 initialSqrtPriceX96

@@ -15,7 +15,6 @@ import { SuperfluidFrameworkDeployer } from
 import { SpiritDeployer } from "script/SpiritDeployer.sol";
 import { NetworkConfig } from "script/config/NetworkConfig.sol";
 
-import { RewardController } from "src/core/RewardController.sol";
 import { SpiritFactory } from "src/factory/SpiritFactory.sol";
 
 import { SpiritVestingFactory } from "src/vesting/SpiritVestingFactory.sol";
@@ -28,7 +27,6 @@ contract SpiritTestBase is UniswapDeployer {
 
     // Contracts under test
     SpiritFactory internal _spiritFactory;
-    RewardController internal _rewardController;
     SpiritVestingFactory internal _spiritVestingFactory;
 
     ISuperToken internal _spirit;
@@ -82,7 +80,6 @@ contract SpiritTestBase is UniswapDeployer {
         vm.stopPrank();
 
         _spiritFactory = SpiritFactory(result.spiritFactoryProxy);
-        _rewardController = RewardController(result.rewardControllerProxy);
         _spiritVestingFactory = SpiritVestingFactory(result.spiritVestingFactory);
         _spirit = ISuperToken(result.spirit);
     }

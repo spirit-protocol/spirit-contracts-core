@@ -3,7 +3,6 @@ pragma solidity ^0.8.26;
 
 import { IERC721 } from "@openzeppelin-v5/contracts/token/ERC721/IERC721.sol";
 import { ISuperToken } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
-import { IStakingPool } from "src/interfaces/core/IStakingPool.sol";
 
 import { ISpiritFactory } from "src/interfaces/factory/ISpiritFactory.sol";
 import { SpiritTestBase } from "test/base/SpiritTestBase.t.sol";
@@ -30,10 +29,7 @@ contract SpiritFactoryTest is SpiritTestBase {
         );
     }
 
-    function _createChild(uint256 specialAllocation)
-        internal
-        returns (ISuperToken newChildToken, IStakingPool newStakingPool)
-    {
+    function _createChild(uint256 specialAllocation) internal returns (ISuperToken newChildToken) {
         bytes32 salt = keccak256(abi.encode("SALT_FOR_NEW_CHILD_TOKEN"));
 
         vm.prank(ADMIN);
@@ -41,40 +37,15 @@ contract SpiritFactoryTest is SpiritTestBase {
             (newChildToken,,) = _spiritFactory.createChild(
                 "New Child Token", "NEWCHILD", ARTIST, AGENT, bytes32(0), salt, DEFAULT_SQRT_PRICE_X96
             );
-        } else {
-            (newChildToken,,) = _spiritFactory.createChild(
-                "New Child Token",
-                "NEWCHILD",
-                ARTIST,
-                AGENT,
-                specialAllocation,
-                bytes32(0),
-                salt,
-                DEFAULT_SQRT_PRICE_X96
-            );
         }
 
         // State settings assertions
         assertNotEq(address(newChildToken), address(0), "Invalid child token address");
-        assertNotEq(address(newStakingPool), address(0), "Invalid staking pool address");
-        assertEq(address(newStakingPool.child()), address(newChildToken), "Child token mismatch");
-        assertEq(address(newStakingPool.SPIRIT()), address(_spirit), "SPIRIT token mismatch");
-        assertEq(address(newStakingPool.REWARD_CONTROLLER()), address(_rewardController), "Reward controller mismatch");
-        assertEq(
-            address(_rewardController.stakingPools(address(newChildToken))),
-            address(newStakingPool),
-            "Staking pool mismatch"
-        );
 
         // Token Supply Assertions
         assertEq(newChildToken.totalSupply(), _spiritFactory.CHILD_TOTAL_SUPPLY(), "Invalid minted supply");
         assertEq(newChildToken.balanceOf(ARTIST), 0, "Artist should not have floating CHILD tokens");
         assertEq(newChildToken.balanceOf(AGENT), 0, "Agent should not have floating CHILD tokens");
-        assertEq(
-            newChildToken.balanceOf(address(newStakingPool)),
-            500_000_000 ether,
-            "Staking Pool should have 500M CHILD tokens (ARTIST and AGENT shares)"
-        );
 
         assertEq(
             newChildToken.balanceOf(address(manager)),
@@ -96,23 +67,6 @@ contract SpiritFactoryTest is SpiritTestBase {
 
         assertEq(
             IERC721(address(positionManager)).balanceOf(address(ADMIN)), 1, "ADMIN should own 1 UniswapV4 Position NFT"
-        );
-
-        // GDA Settings Assertions
-        assertEq(
-            newStakingPool.distributionPool().getUnits(address(newStakingPool)), 1, "Distribution pool units mismatch"
-        );
-        assertEq(
-            newStakingPool.distributionPool().getUnits(address(ARTIST)),
-            newStakingPool.calculateMultiplier(newStakingPool.STAKEHOLDER_LOCKING_PERIOD()) * 250_000_000
-                / newStakingPool.MIN_MULTIPLIER(),
-            "ARTIST should have 250M CHILD tokens locked for 12 months worth of units"
-        );
-        assertEq(
-            newStakingPool.distributionPool().getUnits(address(AGENT)),
-            newStakingPool.calculateMultiplier(newStakingPool.STAKEHOLDER_LOCKING_PERIOD()) * 250_000_000
-                / newStakingPool.MIN_MULTIPLIER(),
-            "AGENT should have 250M CHILD tokens locked for 12 months worth of units"
         );
     }
 
@@ -152,19 +106,6 @@ contract SpiritFactoryTest is SpiritTestBase {
         vm.expectRevert();
         _spiritFactory.createChild(
             "New Child Token", "NEWCHILD", ARTIST, AGENT, bytes32(0), salt, DEFAULT_SQRT_PRICE_X96
-        );
-    }
-
-    function test_createChild_invalid_special_allocation(uint256 specialAllocation) public {
-        specialAllocation =
-            bound(specialAllocation, _spiritFactory.DEFAULT_LIQUIDITY_SUPPLY(), _spiritFactory.CHILD_TOTAL_SUPPLY());
-
-        bytes32 salt = keccak256(abi.encode("SALT_FOR_NEW_CHILD_TOKEN"));
-
-        vm.prank(ADMIN);
-        vm.expectRevert(ISpiritFactory.INVALID_SPECIAL_ALLOCATION.selector);
-        _spiritFactory.createChild(
-            "New Child Token", "NEWCHILD", ARTIST, AGENT, specialAllocation, bytes32(0), salt, DEFAULT_SQRT_PRICE_X96
         );
     }
 

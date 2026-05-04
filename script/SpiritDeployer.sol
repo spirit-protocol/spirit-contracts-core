@@ -28,10 +28,7 @@ import { LiquidityAmounts } from "@uniswap/v4-periphery/src/libraries/LiquidityA
 
 /* Local Imports */
 import { NetworkConfig } from "script/config/NetworkConfig.sol";
-import { RewardController } from "src/core/RewardController.sol";
-import { StakingPool } from "src/core/StakingPool.sol";
 import { SpiritFactory } from "src/factory/SpiritFactory.sol";
-import { IRewardController } from "src/interfaces/core/IRewardController.sol";
 import { IAirstreamFactory } from "src/interfaces/external/IAirstreamFactory.sol";
 import { ISpiritToken } from "src/interfaces/token/ISpiritToken.sol";
 import { SpiritToken } from "src/token/SpiritToken.sol";
@@ -42,10 +39,6 @@ library SpiritDeployer {
 
     struct SpiritDeploymentResult {
         address spirit;
-        address rewardControllerLogic;
-        address rewardControllerProxy;
-        address stakingPoolLogic;
-        address stakingPoolBeacon;
         address spiritFactoryLogic;
         address spiritFactoryProxy;
         address spiritVestingFactory;
@@ -78,11 +71,6 @@ library SpiritDeployer {
 
         // Deploy the Infrastructure Contracts
         results = _deployInfrastructure(config, results);
-
-        // Contracts Configuration
-        RewardController rc = RewardController(results.rewardControllerProxy);
-        rc.grantRole(rc.FACTORY_ROLE(), address(results.spiritFactoryProxy));
-        rc.revokeRole(rc.DEFAULT_ADMIN_ROLE(), deployer);
     }
 
     function _deploySpiritToken(NetworkConfig.SpiritDeploymentConfig memory config, address deployer)
@@ -129,17 +117,6 @@ library SpiritDeployer {
         NetworkConfig.SpiritDeploymentConfig memory config,
         SpiritDeploymentResult memory results
     ) internal returns (SpiritDeploymentResult memory) {
-        // Deploy the Reward Controller contract
-        RewardController rewardControllerLogic = new RewardController(ISuperToken(results.spirit));
-        ERC1967Proxy rewardControllerProxy = new ERC1967Proxy(
-            address(rewardControllerLogic), abi.encodeWithSelector(RewardController.initialize.selector, config.admin)
-        );
-
-        // Deploy the Staking Pool Beacon contract
-        address stakingPoolLogicAddress =
-            address(new StakingPool(ISuperToken(results.spirit), address(rewardControllerProxy)));
-        UpgradeableBeacon stakingPoolBeacon = new UpgradeableBeacon(stakingPoolLogicAddress, config.admin);
-
         // Deploy the Spirit Factory contract
         SpiritFactory spiritFactoryLogic = new SpiritFactory(
             ISuperToken(results.spirit),
@@ -153,10 +130,6 @@ library SpiritDeployer {
             address(spiritFactoryLogic), abi.encodeWithSelector(SpiritFactory.initialize.selector, config.admin)
         );
 
-        results.rewardControllerLogic = address(rewardControllerLogic);
-        results.rewardControllerProxy = address(rewardControllerProxy);
-        results.stakingPoolBeacon = address(stakingPoolBeacon);
-        results.stakingPoolLogic = address(stakingPoolLogicAddress);
         results.spiritFactoryLogic = address(spiritFactoryLogic);
         results.spiritFactoryProxy = address(spiritFactoryProxy);
 
