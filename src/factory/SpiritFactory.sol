@@ -58,6 +58,9 @@ contract SpiritFactory is ISpiritFactory, Initializable, AccessControl {
     /// @notice SPIRIT SuperToken distributed as rewards
     ISuperToken public immutable SPIRIT;
 
+    /// @notice USDC token contract address
+    address public immutable USDC;
+
     /// @notice SuperToken factory for creating child tokennos
     ISuperTokenFactory public immutable SUPER_TOKEN_FACTORY;
 
@@ -126,6 +129,7 @@ contract SpiritFactory is ISpiritFactory, Initializable, AccessControl {
      * @param _poolManager The Uniswap V4 PoolManager contract
      * @param _permit2 The Permit2 contract address
      * @param _airstreamFactory The AirstreamFactory contract for Airstream distribution
+     * @param _usdc The USDC token contract address
      */
     constructor(
         ISuperToken _spirit,
@@ -133,7 +137,8 @@ contract SpiritFactory is ISpiritFactory, Initializable, AccessControl {
         IPositionManager _positionManager,
         IPoolManager _poolManager,
         IPermit2 _permit2,
-        IAirstreamFactory _airstreamFactory
+        IAirstreamFactory _airstreamFactory,
+        address _usdc
     ) {
         _disableInitializers();
 
@@ -143,6 +148,7 @@ contract SpiritFactory is ISpiritFactory, Initializable, AccessControl {
         POOL_MANAGER = _poolManager;
         PERMIT2 = _permit2;
         AIRSTREAM_FACTORY = IAirstreamFactory(_airstreamFactory);
+        USDC = _usdc;
     }
 
     /**
@@ -287,10 +293,8 @@ contract SpiritFactory is ISpiritFactory, Initializable, AccessControl {
         returns (uint256 tokenId)
     {
         // Ensure tokens are in the correct order (lower address first)
-        Currency currency0 =
-            childToken < address(SPIRIT) ? Currency.wrap(address(childToken)) : Currency.wrap(address(SPIRIT));
-        Currency currency1 =
-            childToken > address(SPIRIT) ? Currency.wrap(address(childToken)) : Currency.wrap(address(SPIRIT));
+        Currency currency0 = childToken < USDC ? Currency.wrap(address(childToken)) : Currency.wrap(USDC);
+        Currency currency1 = childToken > USDC ? Currency.wrap(address(childToken)) : Currency.wrap(USDC);
 
         // Create the pool key
         PoolKey memory poolKey = PoolKey({

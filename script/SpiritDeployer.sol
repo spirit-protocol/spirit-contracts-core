@@ -124,7 +124,8 @@ library SpiritDeployer {
             IPositionManager(config.positionManager),
             IPoolManager(config.poolManager),
             IPermit2(config.permit2),
-            IAirstreamFactory(config.airstreamFactory)
+            IAirstreamFactory(config.airstreamFactory),
+            config.usdc
         );
         ERC1967Proxy spiritFactoryProxy = new ERC1967Proxy(
             address(spiritFactoryLogic), abi.encodeWithSelector(SpiritFactory.initialize.selector, config.admin)

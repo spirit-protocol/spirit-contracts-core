@@ -15,6 +15,7 @@ import { SuperfluidFrameworkDeployer } from
 import { SpiritDeployer } from "script/SpiritDeployer.sol";
 import { NetworkConfig } from "script/config/NetworkConfig.sol";
 
+import { ERC20 } from "@openzeppelin-v5/contracts/token/ERC20/ERC20.sol";
 import { SpiritFactory } from "src/factory/SpiritFactory.sol";
 
 import { SpiritVestingFactory } from "src/vesting/SpiritVestingFactory.sol";
@@ -30,6 +31,7 @@ contract SpiritTestBase is UniswapDeployer {
     SpiritVestingFactory internal _spiritVestingFactory;
 
     ISuperToken internal _spirit;
+    address _usdc;
 
     SuperfluidFrameworkDeployer internal _deployer;
     SuperfluidFrameworkDeployer.Framework internal _sf;
@@ -58,6 +60,9 @@ contract SpiritTestBase is UniswapDeployer {
         // Deploy Uniswap Contracts
         UniswapDeployer.setUp();
 
+        // Deploy MockUSDC
+        MockUSDC mUSDC = new MockUSDC();
+
         // Deploy Airstream Factory Mock
         _airstreamFactory = new AirstreamFactoryMock();
 
@@ -73,6 +78,7 @@ contract SpiritTestBase is UniswapDeployer {
         config.permit2 = address(permit2);
         config.airstreamFactory = address(_airstreamFactory);
         config.vestingScheduler = address(_vestingScheduler);
+        config.usdc = address(mUSDC);
 
         // Deploy the contracts under test
         vm.startPrank(DEPLOYER);
@@ -82,6 +88,7 @@ contract SpiritTestBase is UniswapDeployer {
         _spiritFactory = SpiritFactory(result.spiritFactoryProxy);
         _spiritVestingFactory = SpiritVestingFactory(result.spiritVestingFactory);
         _spirit = ISuperToken(result.spirit);
+        _usdc = config.usdc;
     }
 
     function dealSuperToken(address from, address to, ISuperToken token, uint256 amount) internal {
@@ -89,5 +96,11 @@ contract SpiritTestBase is UniswapDeployer {
         token.transfer(to, amount);
         vm.stopPrank();
     }
+
+}
+
+contract MockUSDC is ERC20 {
+
+    constructor() ERC20("USDC", "USDC") { }
 
 }
