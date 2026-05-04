@@ -38,11 +38,11 @@ contract SpiritFactoryTest is SpiritTestBase {
 
         vm.prank(ADMIN);
         if (specialAllocation == 0) {
-            (newChildToken, newStakingPool,,) = _spiritFactory.createChild(
+            (newChildToken,,) = _spiritFactory.createChild(
                 "New Child Token", "NEWCHILD", ARTIST, AGENT, bytes32(0), salt, DEFAULT_SQRT_PRICE_X96
             );
         } else {
-            (newChildToken, newStakingPool,,) = _spiritFactory.createChild(
+            (newChildToken,,) = _spiritFactory.createChild(
                 "New Child Token",
                 "NEWCHILD",
                 ARTIST,
@@ -224,7 +224,7 @@ contract SpiritFactoryTest is SpiritTestBase {
         bytes32 saltA = keccak256(abi.encode("0", uint256(0)));
 
         vm.startPrank(ADMIN);
-        (childTokenA,,,) = _spiritFactory.createChild(
+        (childTokenA,,) = _spiritFactory.createChild(
             "name A", "symbol A", makeAddr("ARTIST_A"), makeAddr("AGENT_A"), bytes32(0), saltA, DEFAULT_SQRT_PRICE_X96
         );
 
@@ -236,7 +236,7 @@ contract SpiritFactoryTest is SpiritTestBase {
 
             bytes32 saltB = keccak256(abi.encode("i", i));
 
-            (childTokenB,,,) = _spiritFactory.createChild(
+            (childTokenB,,) = _spiritFactory.createChild(
                 string(abi.encodePacked("name B", uint256(i))),
                 string(abi.encodePacked("symbol B", uint256(i))),
                 makeAddr("ARTIST_B"),

@@ -93,11 +93,11 @@ contract AirstreamIntegrationForkTest is SpiritTestBase {
 
         vm.prank(ADMIN);
         if (specialAllocation == 0) {
-            (newChildToken, newStakingPool, airstreamAddress, controllerAddress) = _spiritFactory.createChild(
+            (newChildToken, airstreamAddress, controllerAddress) = _spiritFactory.createChild(
                 "New Child Token", "NEWCHILD", ARTIST, AGENT, MERKLE_ROOT, salt, DEFAULT_SQRT_PRICE_X96
             );
         } else {
-            (newChildToken, newStakingPool, airstreamAddress, controllerAddress) = _spiritFactory.createChild(
+            (newChildToken, airstreamAddress, controllerAddress) = _spiritFactory.createChild(
                 "New Child Token",
                 "NEWCHILD",
                 ARTIST,

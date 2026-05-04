@@ -142,9 +142,7 @@ library SpiritDeployer {
 
         // Deploy the Spirit Factory contract
         SpiritFactory spiritFactoryLogic = new SpiritFactory(
-            address(stakingPoolBeacon),
             ISuperToken(results.spirit),
-            IRewardController(address(rewardControllerProxy)),
             ISuperTokenFactory(config.superTokenFactory),
             IPositionManager(config.positionManager),
             IPoolManager(config.poolManager),

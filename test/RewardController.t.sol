@@ -209,7 +209,7 @@ contract RewardControllerTest is SpiritTestBase {
         bytes32 salt = keccak256(abi.encode("SALT_FOR_NEW_CHILD_TOKEN"));
 
         vm.prank(ADMIN);
-        (childToken, stakingPool,,) = _spiritFactory.createChild(
+        (childToken,,) = _spiritFactory.createChild(
             "New Child Token", "NEWCHILD", ARTIST, AGENT, bytes32(0), salt, DEFAULT_SQRT_PRICE_X96
         );
 

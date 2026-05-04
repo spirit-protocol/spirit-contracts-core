@@ -57,14 +57,8 @@ contract SpiritFactory is ISpiritFactory, Initializable, AccessControl {
     /// @notice SPIRIT SuperToken distributed as rewards
     ISuperToken public immutable SPIRIT;
 
-    /// @notice beacon for deploying staking pool proxies
-    UpgradeableBeacon public immutable STAKING_POOL_BEACON;
-
     /// @notice SuperToken factory for creating child tokennos
     ISuperTokenFactory public immutable SUPER_TOKEN_FACTORY;
-
-    /// @notice RewardController contract responsible for distributing SPIRIT rewards
-    IRewardController public immutable REWARD_CONTROLLER;
 
     /// @notice Uniswap V4 PositionManager contract
     IPositionManager public immutable POSITION_MANAGER;
@@ -116,9 +110,7 @@ contract SpiritFactory is ISpiritFactory, Initializable, AccessControl {
 
     /**
      * @notice SpiritFactory contract constructor
-     * @param _stakingPoolBeacon The beacon for deploying staking pool proxies
      * @param _spirit The SPIRIT SuperToken distributed as rewards
-     * @param _rewardController The RewardController contract responsible for distributing SPIRIT rewards
      * @param _superTokenFactory The SuperToken factory for creating child tokens
      * @param _positionManager The Uniswap V4 PositionManager contract
      * @param _poolManager The Uniswap V4 PoolManager contract
@@ -126,9 +118,7 @@ contract SpiritFactory is ISpiritFactory, Initializable, AccessControl {
      * @param _airstreamFactory The AirstreamFactory contract for Airstream distribution
      */
     constructor(
-        address _stakingPoolBeacon,
         ISuperToken _spirit,
-        IRewardController _rewardController,
         ISuperTokenFactory _superTokenFactory,
         IPositionManager _positionManager,
         IPoolManager _poolManager,
@@ -137,9 +127,7 @@ contract SpiritFactory is ISpiritFactory, Initializable, AccessControl {
     ) {
         _disableInitializers();
 
-        STAKING_POOL_BEACON = UpgradeableBeacon(_stakingPoolBeacon);
         SPIRIT = _spirit;
-        REWARD_CONTROLLER = _rewardController;
         SUPER_TOKEN_FACTORY = _superTokenFactory;
         POSITION_MANAGER = _positionManager;
         POOL_MANAGER = _poolManager;
@@ -173,9 +161,9 @@ contract SpiritFactory is ISpiritFactory, Initializable, AccessControl {
     )
         external
         onlyRole(DEFAULT_ADMIN_ROLE)
-        returns (ISuperToken child, IStakingPool stakingPool, address airstreamAddress, address controllerAddress)
+        returns (ISuperToken child, address airstreamAddress, address controllerAddress)
     {
-        (child, stakingPool, airstreamAddress, controllerAddress) =
+        (child, airstreamAddress, controllerAddress) =
             _createChild(name, symbol, artist, agent, 0, merkleRoot, salt, initialSqrtPriceX96);
     }
 
@@ -192,12 +180,12 @@ contract SpiritFactory is ISpiritFactory, Initializable, AccessControl {
     )
         external
         onlyRole(DEFAULT_ADMIN_ROLE)
-        returns (ISuperToken child, IStakingPool stakingPool, address airstreamAddress, address controllerAddress)
+        returns (ISuperToken child, address airstreamAddress, address controllerAddress)
     {
         // Ensure the special allocation is not greater than the default liquidity supply
         if (specialAllocation >= DEFAULT_LIQUIDITY_SUPPLY) revert INVALID_SPECIAL_ALLOCATION();
 
-        (child, stakingPool, airstreamAddress, controllerAddress) =
+        (child, airstreamAddress, controllerAddress) =
             _createChild(name, symbol, artist, agent, specialAllocation, merkleRoot, salt, initialSqrtPriceX96);
     }
 
@@ -229,18 +217,9 @@ contract SpiritFactory is ISpiritFactory, Initializable, AccessControl {
         bytes32 merkleRoot,
         bytes32 salt,
         uint160 initialSqrtPriceX96
-    )
-        internal
-        returns (ISuperToken child, IStakingPool stakingPool, address airstreamAddress, address controllerAddress)
-    {
+    ) internal returns (ISuperToken child, address airstreamAddress, address controllerAddress) {
         // deploy the new child token with default 1B supply to the caller (admin)
         child = ISuperToken(_deployToken(name, symbol, salt, CHILD_TOTAL_SUPPLY));
-
-        // Deploy a new StakingPool contract associated to the child token
-        stakingPool = IStakingPool(_deployStakingPool(address(child), artist, agent));
-
-        // Update the reward controller configuration
-        REWARD_CONTROLLER.setStakingPool(address(child), stakingPool);
 
         // Create the Uniswap V4 pool and mint liquidity position for 250M CHILD (single sided)
         _setupUniswapPool(address(child), DEFAULT_LIQUIDITY_SUPPLY - specialAllocation, initialSqrtPriceX96);
@@ -255,7 +234,7 @@ contract SpiritFactory is ISpiritFactory, Initializable, AccessControl {
             child.transfer(msg.sender, remainingBalance);
         }
 
-        emit ChildTokenCreated(address(child), address(stakingPool), artist, agent, merkleRoot);
+        emit ChildTokenCreated(address(child), artist, agent, merkleRoot);
     }
 
     function _deployAirstream(string memory name, address childToken, bytes32 merkleRoot)
@@ -302,23 +281,6 @@ contract SpiritFactory is ISpiritFactory, Initializable, AccessControl {
 
         // Initialize the new ChildSuperToken contract
         IChildSuperToken(childToken).initialize(SUPER_TOKEN_FACTORY, name, symbol, address(this), supply);
-    }
-
-    function _deployStakingPool(address childToken, address artist, address agent)
-        internal
-        returns (address stakingPool)
-    {
-        // This salt will prevent staking pool with the same child token from being deployed twice
-        bytes32 salt = keccak256(abi.encode(childToken));
-
-        // Deploy the new StakingPool contract
-        stakingPool = address(new BeaconProxy{ salt: salt }(address(STAKING_POOL_BEACON), ""));
-
-        // Approve the staking pool to spend the 500M CHILD (artist and agent share) from this contract
-        ISuperToken(childToken).approve(address(stakingPool), 500_000_000 ether);
-
-        // Initialize the new Locker instance
-        IStakingPool(stakingPool).initialize(ISuperToken(childToken), artist, agent);
     }
 
     function _setupUniswapPool(address childToken, uint256 childTokenAmount, uint160 initialSqrtPriceX96)

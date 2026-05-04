@@ -20,9 +20,7 @@ interface ISpiritFactory {
     //  /_____/ |___/\___/_/ /_/\__/____/
 
     /// @notice Event emitted when a child token is created
-    event ChildTokenCreated(
-        address indexed child, address indexed stakingPool, address artist, address agent, bytes32 merkleRoot
-    );
+    event ChildTokenCreated(address indexed child, address artist, address agent, bytes32 merkleRoot);
 
     //     ______           __                     ______
     //    / ____/_  _______/ /_____  ____ ___     / ____/_____________  __________
@@ -56,7 +54,6 @@ interface ISpiritFactory {
      * @param salt The salt used to deploy the child token
      * @param initialSqrtPriceX96 The initial sqrt price X96 for the Uniswap V4 pool SPIRIT/CHILD
      * @return child The address of the child token
-     * @return stakingPool The address of the staking pool
      * @return airstreamAddress The address of the airstream
      * @return controllerAddress The address of the airstream controller
      */
@@ -68,9 +65,7 @@ interface ISpiritFactory {
         bytes32 merkleRoot,
         bytes32 salt,
         uint160 initialSqrtPriceX96
-    )
-        external
-        returns (ISuperToken child, IStakingPool stakingPool, address airstreamAddress, address controllerAddress);
+    ) external returns (ISuperToken child, address airstreamAddress, address controllerAddress);
 
     /**
      * @notice Creates a child token and staking pool
@@ -84,7 +79,6 @@ interface ISpiritFactory {
      * @param salt The salt used to deploy the child token
      * @param initialSqrtPriceX96 The initial sqrt price X96 for the Uniswap V4 pool SPIRIT/CHILD
      * @return child The address of the child token
-     * @return stakingPool The address of the staking pool
      * @return airstreamAddress The address of the airstream
      * @return controllerAddress The address of the airstream controller
      */
@@ -97,9 +91,7 @@ interface ISpiritFactory {
         bytes32 merkleRoot,
         bytes32 salt,
         uint160 initialSqrtPriceX96
-    )
-        external
-        returns (ISuperToken child, IStakingPool stakingPool, address airstreamAddress, address controllerAddress);
+    ) external returns (ISuperToken child, address airstreamAddress, address controllerAddress);
 
     /**
      * @notice Terminates the airstream for a child token and returns the remaining tokens to the callers
