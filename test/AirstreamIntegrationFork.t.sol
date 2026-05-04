@@ -128,6 +128,8 @@ contract AirstreamIntegrationForkTest is SpiritTestBase {
             1,
             "ADMIN should own 1 UniswapV4 Position NFT"
         );
+
+        assertEq(_spiritFactory.spiritPool().getUnits(ARTIST), 1, "Artist pool unit shall be 1");
     }
 
     function test_createChild() public {

@@ -74,6 +74,8 @@ contract SpiritFactoryTest is SpiritTestBase {
         assertEq(
             IERC721(address(positionManager)).balanceOf(address(AGENT)), 1, "AGENT should own 1 UniswapV4 Position NFT"
         );
+
+        assertEq(_spiritFactory.spiritPool().getUnits(ARTIST), 1, "Artist pool unit shall be 1");
     }
 
     function test_createChild() public {
