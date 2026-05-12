@@ -88,8 +88,8 @@ contract SpiritFactory is ISpiritFactory, Initializable, AccessControl {
     /// @notice Amount of tokens reserved for the Agent (200 million)
     uint96 public constant AGENT_ALLOCATION = 200_000_000 ether;
 
-    /// @notice Amount of tokens reserved for the Artist (250 million)
-    uint96 public constant ARTIST_ALLOCATION = 250_000_000 ether;
+    /// @notice Amount of tokens reserved for the Artist (500 million)
+    uint96 public constant ARTIST_ALLOCATION = 500_000_000 ether;
 
     /// @notice Duration of the Airstream distribution (52 weeks = 1 year)
     uint64 public constant AIRSTREAM_DURATION = 52 weeks;
@@ -235,9 +235,6 @@ contract SpiritFactory is ISpiritFactory, Initializable, AccessControl {
 
         // Transfer the artist allocation
         child.transfer(artist, ARTIST_ALLOCATION);
-
-        // Transfer the remaining balance to the admin
-        child.transfer(msg.sender, child.balanceOf(address(this)));
 
         emit ChildTokenCreated(address(child), artist, agent, merkleRoot);
     }

@@ -66,12 +66,6 @@ contract SpiritFactoryTest is SpiritTestBase {
         );
 
         assertEq(
-            newChildToken.balanceOf(address(ADMIN)),
-            250_000_000 ether,
-            "Admin should have 250M CHILD tokens (ADMIN share)"
-        );
-
-        assertEq(
             IERC721(address(positionManager)).balanceOf(address(AGENT)), 1, "AGENT should own 1 UniswapV4 Position NFT"
         );
 
